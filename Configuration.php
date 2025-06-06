@@ -1,32 +1,36 @@
 <?php
-require_once("core/Database.php");
-require_once("core/FilePresenter.php");
-require_once("core/MustachePresenter.php");
-require_once("core/Router.php");
-require_once("core/EmailSender.php");
+require_once "core/Database.php";
+require_once "core/FilePresenter.php";
+require_once "core/MustachePresenter.php";
+require_once "core/Router.php";
+require_once "core/EmailSender.php";
 
-require_once("controller/HomeController.php");
-require_once("controller/GroupController.php");
-require_once("controller/SongController.php");
-require_once("controller/TourController.php");
-require_once("controller/RegistroController.php");
-require_once("controller/LoginController.php");
-require_once("controller/PerfilController.php");
+require_once "controller/HomeController.php";
+require_once "controller/GroupController.php";
+require_once "controller/SongController.php";
+require_once "controller/TourController.php";
+require_once "controller/RegistroController.php";
+require_once "controller/LoginController.php";
+require_once "controller/PerfilController.php";
+require_once "controller/PartidaController.php";
+require_once "controller/PreguntaController.php";
 
-require_once("model/GroupModel.php");
-require_once("model/SongModel.php");
-require_once("model/TourModel.php");
-require_once("model/RegistroModel.php");
-require_once("model/LoginModel.php");
-require_once("model/EmailModel.php");
-require_once("model/PerfilModel.php");
+require_once "model/GroupModel.php";
+require_once "model/SongModel.php";
+require_once "model/TourModel.php";
+require_once "model/RegistroModel.php";
+require_once "model/LoginModel.php";
+require_once "model/EmailModel.php";
+require_once "model/PerfilModel.php";
+require_once "model/CategoriaModel.php";
+require_once "model/PreguntaModel.php";
 
 
-include_once('vendor/mustache/src/Mustache/Autoloader.php');
+include_once 'vendor/mustache/src/Mustache/Autoloader.php';
 
 class Configuration
 {
-  public function getDatabase()
+  public function getDatabase(): Database
   {
     $config = $this->getIniConfig();
 
@@ -38,7 +42,7 @@ class Configuration
     );
   }
 
-  public function getEmailSender()
+  public function getEmailSender(): EmailSender
   {
     $config = $this->getIniConfig();
 
@@ -55,7 +59,7 @@ class Configuration
     return parse_ini_file("configuration/config.ini", true);
   }
 
-  public function getRegistroController()
+  public function getRegistroController(): RegistroController
   {
     return new RegistroController(
       new RegistroModel($this->getDatabase()),
@@ -64,7 +68,7 @@ class Configuration
     );
   }
 
-  public function getPerfilController()
+  public function getPerfilController(): PerfilController
   {
     return new PerfilController(
       new PerfilModel($this->getDatabase()),
@@ -72,7 +76,7 @@ class Configuration
     );
   }
 
-  public function getLoginController()
+  public function getLoginController(): LoginController
   {
     return new LoginController(
       new LoginModel($this->getDatabase()),
@@ -80,8 +84,24 @@ class Configuration
     );
   }
 
+  public function getPartidaController(): PartidaController
+  {
+    return new PartidaController(
+      // Hay q pasarle tambien una PartidaModel que es la que se encarga de guardar/finalizar la partida del usuario
+      new CategoriaModel($this->getDatabase()),
+      $this->getViewer()
+    );
+  }
 
-  public function getSongController()
+  public function getPreguntaController(): PreguntaController
+  {
+    return new PreguntaController(
+      new PreguntaModel($this->getDatabase()),
+      $this->getViewer()
+    );
+  }
+
+  public function getSongController(): SongController
   {
     return new SongController(
       new SongModel($this->getDatabase()),
@@ -89,7 +109,7 @@ class Configuration
     );
   }
 
-  public function getTourController()
+  public function getTourController(): TourController
   {
     return new TourController(
       new TourModel($this->getDatabase()),
@@ -97,25 +117,24 @@ class Configuration
     );
   }
 
-  public function getHomeController()
+  public function getHomeController(): HomeController
   {
     return new HomeController($this->getViewer());
   }
 
 
-  public function getGroupController()
+  public function getGroupController(): GroupController
   {
     return new GroupController(new GroupModel($this->getDatabase()), $this->getViewer());
   }
 
-  public function getRouter()
+  public function getRouter(): Router
   {
     return new Router("getHomeController", "show", $this);
   }
 
-  public function getViewer()
+  public function getViewer(): MustachePresenter
   {
-    //return new FileView();
     return new MustachePresenter("view");
   }
 }

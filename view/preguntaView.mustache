@@ -1,0 +1,54 @@
+{{> navbar }}
+<main class="container mt-4">
+  <h2>Pregunta</h2>
+
+  <div class="card p-3 mb-3" style="background-color: #f8f9fa;">
+    <p><strong>Categoría:</strong> {{categoria.nombre}}</p>
+    <p>{{pregunta.pregunta}}</p>
+  </div>
+
+  <div id="timer" class="alert alert-info">
+    Tiempo restante: <span id="tiempo-restante">{{tiempo_limite}}</span> segundos
+  </div>
+
+  <div class="respuestas d-grid gap-2">
+    {{#respuestas}}
+      <a href="/pregunta/responder?idRespuesta={{id_respuesta}}"
+      class="btn btn-outline-primary btn-lg">
+      {{respuesta}}
+      </a>
+    {{/respuestas}}
+  </div>
+</main>
+
+<!-- Script para el timer -->
+<script>
+  // Constante que indica el tiempo limite establecido en el backend
+  const tiempoLimite = {{tiempo_limite}};
+  // Constante que indica el tiempo restante de acuerdo al backend
+  // Esto evita que el usuario al hacer F5 pueda reiniciar el timer
+  let tiempoRestante = tiempoLimite - {{tiempo_transcurrido}};
+
+  const timerElement = document.getElementById('tiempo-restante');
+  const form = document.getElementById('form-respuesta');
+
+  // Actualizar el timer en pantalla
+  function actualizarTimer() {
+    timerElement.textContent = tiempoRestante;
+  }
+
+  function cuentaRegresiva() {
+    if (tiempoRestante <= 0) {
+      alert('Se acabó el tiempo para responder. La partida terminará.');
+      // Redirigir al endpoint que finaliza la partida
+      window.location.href = "/partida/finalizarPartida";
+      return;
+    }
+    tiempoRestante--;
+    actualizarTimer();
+    setTimeout(cuentaRegresiva, 1000);
+  }
+
+  actualizarTimer();
+  cuentaRegresiva();
+</script>

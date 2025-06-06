@@ -41,7 +41,7 @@ class PerfilController
 
   private function isLogueado(): bool
   {
-    return !($_SESSION['usuario_id'] === null);
+    return $_SESSION['usuario_id'] != null;
   }
 
 }

@@ -1,0 +1,44 @@
+{{> navbar }}
+<main class="container mt-4">
+  <h2>Pregunta</h2>
+
+  <div class="card p-3 mb-3" style="background-color: #f8f9fa;">
+    <p><strong>Categoría:</strong> {{categoria.nombre}}</p>
+    <p>{{pregunta.pregunta}}</p>
+  </div>
+
+  <div class="respuestas d-grid gap-2">
+    {{#respuestas}}
+      <button
+        class="btn btn-lg
+          {{#esCorrecta}}btn-success{{/esCorrecta}}
+          {{^esCorrecta}}{{#isSelected}}btn-danger{{/isSelected}}{{/esCorrecta}}
+        " disabled>
+        {{respuesta}}
+      </button>
+    {{/respuestas}}
+  </div>
+
+  {{#correcta}}
+    <a href="/partida/jugar" class="btn btn-success mt-3">Siguiente Pregunta</a>
+  {{/correcta}}
+
+  {{^correcta}}
+    <a href="/partida/finalizarPartida" class="btn btn-danger mt-3">Finalizar partida</a>
+  {{/correcta}}
+</main>
+
+{{#comentario}}
+  <!-- Esto es para que en vez de mostrar un boton para
+  finalizar poder redirigir al usuario cuando
+  la respuesta es incorrecta y  pasan 10 segundos
+  ( Ver si esta bien ) -->
+  {{^correcta}}
+    <script>
+      setTimeout(() => {
+        window.location.href = "/partida/finalizarPartida";
+      }, 10000);
+    </script>
+  {{/correcta}}
+{{/comentario}}
+

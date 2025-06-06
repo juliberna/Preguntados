@@ -5,12 +5,12 @@ class Database
 
   private $conn;
 
-  function __construct($servername, $username, $dbname, $password)
+  public function __construct($servername, $username, $dbname, $password)
   {
     $this->conn = new Mysqli($servername, $username, $password, $dbname) or die("Error de conexion " . mysqli_connect_error());
   }
 
-  public function query($sql)
+  public function query($sql): array
   {
     $result = $this->conn->query($sql);
 
@@ -32,7 +32,7 @@ class Database
     return $this->conn->insert_id;
   }
 
-  function __destruct()
+  public function __destruct()
   {
     $this->conn->close();
   }

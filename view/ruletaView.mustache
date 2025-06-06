@@ -1,0 +1,52 @@
+{{> navbar}}
+<main class="fondo text-white">
+  <div class="container py-5 text-center">
+    <p>Vas a obtener una categoría aleatoria</p>
+
+    <!-- Ruleta estilo carrusel/caja -->
+    <div id="ruleta-container" class="my-4 overflow-hidden border rounded"
+         style="width: 600px; height: 120px; margin: 0 auto; background: #222; position: relative;">
+      <div id="ruleta" class="d-flex" style="transition: transform 3s ease-out;">
+        {{#categorias}}
+          <div class="categoria px-4 d-flex flex-column align-items-center justify-content-center"
+               style="min-width: 150px;">
+            <img src="/public/images/logo.png" style="width: 60px; height: 60px;" alt="{{nombre}}">
+            <span>{{nombre}}</span>
+          </div>
+        {{/categorias}}
+      </div>
+    </div>
+
+    <form action="/pregunta/dameUna" method="get" id="form-ver-pregunta" style="display: none;">
+      <button type="submit" class="btn btn-success mt-3">Ver Pregunta</button>
+    </form>
+  </div>
+</main>
+
+<!-- Script para girar la ruleta -->
+<script>
+  const ruleta = document.getElementById('ruleta');
+  const formVerPregunta = document.getElementById('form-ver-pregunta');
+
+  // Constante de acuerdo al controlador para ver si el usuario ya tiene una categoria para mostrar o no mostrar el boton
+  const yaGirado = {{#mostrarBoton}}true{{/mostrarBoton}}{{^mostrarBoton}}false{{/mostrarBoton}};
+  // La posicion de la categoria random del backend en el array de categorias
+  const posicionGanadora = {{posicionGanadora}};
+
+  const desplazamiento = posicionGanadora * 150 - 225;
+
+  if (!yaGirado) {
+    setTimeout(() => {
+      ruleta.style.transition = "transform 3s ease-out";
+      ruleta.style.transform = `translateX(-${desplazamiento}px)`;
+
+      setTimeout(() => {
+        formVerPregunta.style.display = 'block';
+      }, 3000); // esperar a que termine la animación de la ruleta para mostrar el "Ver pregunta"
+    }, 200);
+  } else {
+    // Ya el usuario giro la ruleta y tiene una categoria, mostrar la categoría directamente y el botón
+    ruleta.style.transform = `translateX(-${desplazamiento}px)`;
+    formVerPregunta.style.display = 'block';
+  }
+</script>

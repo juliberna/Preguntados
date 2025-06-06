@@ -4,6 +4,7 @@ class LoginController
 {
   private $model;
   private $view;
+  private $loginUrl = "/login/show";
 
   public function __construct($model, $view)
   {
@@ -32,16 +33,16 @@ class LoginController
 
     if (!$usuario || !password_verify($password, $usuario["contrasena_hash"])) {
       $_SESSION['login_error'] = 'Correo o contraseña incorrectos';
-      $this->redirectTo("/login/show");
+      $this->redirectTo($this->loginUrl);
     }
 
     if (!$usuario["es_validado"]) {
       $_SESSION['login_error'] = 'Tu cuenta aún no fue validada. Por favor revisá tu correo.';
-      $this->redirectTo("/login/show");
+      $this->redirectTo($this->loginUrl);
     }
 
     $_SESSION["usuario_id"] = $usuario["id_usuario"];
-    $this->redirectTo("/perfil/show");
+    $this->redirectTo("/");
   }
 
 
@@ -51,7 +52,7 @@ class LoginController
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       session_unset();
       session_destroy();
-      $this->redirectTo("/login/show");
+      $this->redirectTo($this->loginUrl);
     }
   }
 
@@ -61,5 +62,4 @@ class LoginController
     header('Location: ' . $str);
     exit();
   }
-
 }

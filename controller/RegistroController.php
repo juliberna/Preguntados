@@ -31,7 +31,7 @@ class RegistroController
     $sexo = $_POST['sexo'];
     $sexoId = ($sexo == "masculino") ? 1 : (($sexo == "femenino") ? 2 : 3);
 
-    // Hardcodeado siempre sera Buenos Aires y  Argentina hasta tener el mapa
+    // Hardcodeado siempre sera Buenos Aires y Argentina hasta tener el mapa
     $idPais = 1;
     $idCiudad = 1;
 
