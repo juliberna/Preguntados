@@ -70,10 +70,10 @@ class PartidaController
     {
         // Registrar en BD la finalización de la partida
         $id_partida = $_SESSION["id_partida"];
-        $this->partidaModel->finalizarPartida($id_partida, $_SESSION["puntaje"]);
+        $this->partidaModel->finalizarPartida($id_partida, $_SESSION["puntaje_partida"]);
 
         // Limpiar datos de la partida,categoria y pregunta actual en sesión
-        unset($_SESSION["id_partida"], $_SESSION["categoria"], $_SESSION["pregunta_actual"], $_SESSION["inicio_pregunta"]);
+        unset($_SESSION["id_partida"], $_SESSION["categoria"], $_SESSION["pregunta_actual"], $_SESSION["inicio_pregunta"], $_SESSION["puntaje_partida"]);
 
         // Redirigir al home
         header("Location: /home");

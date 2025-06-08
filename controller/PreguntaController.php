@@ -84,7 +84,7 @@ class PreguntaController
         $id_usuario = $_SESSION["usuario_id"];
         $id_partida = $_SESSION["id_partida"];
         // Ver el puntaje (No va a ser necesario es solo para pruebas)
-        $puntaje = $_SESSION["puntaje"];
+        $puntajePartida = $_SESSION["puntaje_partida"] ?? 0;
 
         // Si no tengo una pregunta entregada no puedo tener una respuesta, esta haciendo trampa
         // Le cierro la partida y lo redirijo al home
@@ -113,8 +113,8 @@ class PreguntaController
         if ($es_correcta) {
             // Actualizar
             $this->model->sumarPunto($id_usuario);
-            $puntaje = $this->model->getPuntaje($id_usuario);
-            $_SESSION['puntaje'] = $puntaje;
+            ++$puntajePartida;
+            $_SESSION['puntaje_partida'] = $puntajePartida;
 
             // Actualizar estadisticas
             $this->model->incrementarCorrectasPregunta($pregunta["id_pregunta"]);
@@ -138,7 +138,9 @@ class PreguntaController
             'idRespuestaSeleccionada' => $idRespuestaSeleccionada,
             'correcta' => $es_correcta
         ]);
-        echo "Puntaje: $puntaje";
+        echo "Puntaje acumulado en esta partida: $puntajePartida" . "\n";
+        $puntajeUsuario = $this->model->getPuntaje($id_usuario);
+        echo "Tu puntaje total: $puntajeUsuario";
 
         // Limpiar los datos de la pregunta en la session
         unset($_SESSION["pregunta_actual"], $_SESSION["inicio_pregunta"], $_SESSION["categoria"]);
