@@ -112,13 +112,13 @@ class PreguntaController
 
         if ($es_correcta) {
             // Actualizar
-            // $this->model->sumarPunto($id_usuario, $id_partida);
+            $this->model->sumarPunto($id_usuario);
+            $puntaje = $this->model->getPuntaje($id_usuario);
+            $_SESSION['puntaje'] = $puntaje;
 
             // Actualizar estadisticas
             $this->model->incrementarCorrectasPregunta($pregunta["id_pregunta"]);
             $this->model->incrementarCorrectasUsuario($id_usuario);
-            ++$puntaje;
-            $_SESSION["puntaje"] = $puntaje;
         }
 
         // Guardar la respuesta en partida_pregunta

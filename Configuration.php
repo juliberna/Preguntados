@@ -24,6 +24,7 @@ require_once "model/EmailModel.php";
 require_once "model/PerfilModel.php";
 require_once "model/CategoriaModel.php";
 require_once "model/PreguntaModel.php";
+require_once "model/PartidaModel.php";
 
 
 include_once 'vendor/mustache/src/Mustache/Autoloader.php';
@@ -87,7 +88,7 @@ class Configuration
   public function getPartidaController(): PartidaController
   {
     return new PartidaController(
-      // Hay q pasarle tambien una PartidaModel que es la que se encarga de guardar/finalizar la partida del usuario
+      new PartidaModel($this->getDatabase()),
       new CategoriaModel($this->getDatabase()),
       $this->getViewer()
     );
