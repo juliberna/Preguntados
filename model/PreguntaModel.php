@@ -198,17 +198,10 @@ class PreguntaModel
         $stmt->execute();
     }
 
-    public function registrarPreguntaEnPartida($id_partida, $id_pregunta)
+    public function registrarPreguntaEnPartida($id_partida, $id_pregunta, $id_respuesta, $es_correcta)
     {
-        $stmt = $this->db->prepare("INSERT INTO partida_pregunta (id_partida, id_pregunta) VALUES (?, ?)");
-        $stmt->bind_param("ii", $id_partida, $id_pregunta);
-        $stmt->execute();
-    }
-
-    public function guardarRespuestaEnPartida($id_partida, $id_pregunta, $id_respuesta, $es_correcta)
-    {
-        $stmt = $this->db->prepare("UPDATE partida_pregunta SET id_respuesta_elegida = ?,acerto = ? WHERE id_partida = ? AND id_pregunta = ?");
-        $stmt->bind_param("iiii", $id_respuesta, $es_correcta, $id_partida, $id_pregunta);
+        $stmt = $this->db->prepare("INSERT INTO partida_pregunta (id_partida, id_pregunta,id_respuesta_elegida,acerto) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("iiii", $id_partida, $id_pregunta, $id_respuesta, $es_correcta);
         $stmt->execute();
     }
 

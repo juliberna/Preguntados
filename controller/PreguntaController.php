@@ -11,6 +11,16 @@ class PreguntaController
         $this->view = $view;
     }
 
+    public function tiempoRestante()
+    {
+        $inicio = $_SESSION['inicio_pregunta'] ?? time();
+        $tiempoLimite = $_SESSION['tiempo_limite'] ?? 10;
+        $now = time();
+        $resta = max(0, $tiempoLimite - ($now - $inicio));
+        header('Content-Type: application/json');
+        echo json_encode(['segundos' => $resta]);
+    }
+
     // El usuario hace clic en "Ver Pregunta"
     public function dameUna()
     {
@@ -64,10 +74,7 @@ class PreguntaController
         // Guardar en sesión la pregunta y el instante actual
         $_SESSION["pregunta_actual"] = $pregunta;
         $_SESSION["inicio_pregunta"] = time();
-
-        // Guardar que esta pregunta se entregó en esta partida
-        $this->model->registrarPreguntaEnPartida($id_partida, $pregunta["id_pregunta"]);
-
+        
         // Mostrar pregunta con sus 4 respuestas y el tiempo
         $this->view->render("pregunta", [
             'title' => 'Pregunta',
@@ -121,8 +128,8 @@ class PreguntaController
             $this->model->incrementarCorrectasUsuario($id_usuario);
         }
 
-        // Guardar la respuesta en partida_pregunta
-        $this->model->guardarRespuestaEnPartida($id_partida, $pregunta["id_pregunta"], $idRespuestaSeleccionada, $es_correcta);
+        // Registrar los datos en "Partida_pregunta"
+        $this->model->registrarPreguntaEnPartida($id_partida, $pregunta["id_pregunta"], $idRespuestaSeleccionada, $es_correcta);
 
         // Recorro las respuestas de esa pregunta para saber luego en el front cual fue elegida por el usuario
         foreach ($respuestas as &$r) {
