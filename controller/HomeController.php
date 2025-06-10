@@ -11,19 +11,9 @@ class HomeController
 
   public function show()
   {
-    if (!$this->isLogueado()) {
-      header("Location: /login/show");
-      exit();
-    }
-
-    $this->view->render("home", [
-      'title' => 'Home Usuario',
-      'css' => '<link rel="stylesheet" href="/public/css/perfil.css">'
-    ]);
-  }
-
-  private function isLogueado(): bool
-  {
-    return $_SESSION['usuario_id'] != null;
+      $this->view->render("home", [
+          'title' => 'Home Usuario',
+          'css' => '<link rel="stylesheet" href="/public/css/perfil.css">'
+      ]);
   }
 }

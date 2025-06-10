@@ -11,25 +11,9 @@ class PreguntaController
         $this->view = $view;
     }
 
-    public function tiempoRestante()
-    {
-        $inicio = $_SESSION['inicio_pregunta'] ?? time();
-        $tiempoLimite = $_SESSION['tiempo_limite'] ?? 10;
-        $now = time();
-        $resta = max(0, $tiempoLimite - ($now - $inicio));
-        header('Content-Type: application/json');
-        echo json_encode(['segundos' => $resta]);
-    }
-
     // El usuario hace clic en "Ver Pregunta"
     public function dameUna()
     {
-        // Validacion de que este logueado
-        if (!isset($_SESSION["usuario_id"])) {
-            header("Location: /login/show");
-            exit();
-        }
-
         $id_usuario = $_SESSION["usuario_id"];
 
         // Obtengo el id de la partida activa

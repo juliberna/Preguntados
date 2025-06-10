@@ -29,7 +29,7 @@ class RegistroController
     $usuario = $_POST['usuario'];
     $contrasenaHash = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $sexo = $_POST['sexo'];
-    $sexoId = ($sexo == "masculino") ? 1 : (($sexo == "femenino") ? 2 : 3);
+    $sexoId = ($sexo === "masculino") ? 1 : (($sexo == "femenino") ? 2 : 3);
 
     // Hardcodeado siempre sera Buenos Aires y Argentina hasta tener el mapa
     $idPais = 1;

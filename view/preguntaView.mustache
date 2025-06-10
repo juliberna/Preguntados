@@ -8,7 +8,7 @@
     </div>
 
     <div id="timer" class="alert alert-info">
-        Tiempo restante: <span id="tiempo-restante">…</span> segundos
+        Tiempo restante: <span id="tiempo-restante">{{tiempo_limite}}</span> segundos
     </div>
 
     <div class="respuestas d-grid gap-2">
@@ -23,23 +23,32 @@
 
 <!-- Script para el timer -->
 <script>
-    const timerEl = document.getElementById('tiempo-restante');
+    // Constante que indica el tiempo limite establecido en el backendAdd commentMore actions
+    const tiempoLimite = {{tiempo_limite}};
+    // Constante que indica el tiempo restante de acuerdo al backend
+    // Esto evita que el usuario al hacer F5 pueda reiniciar el timer
+    let tiempoRestante = tiempoLimite - {{tiempo_transcurrido}};
 
-    async function refrescarTimer() {
-        try {
-            const res = await fetch('/pregunta/tiempoRestante', {cache: 'no-store'});
-            const {segundos} = await res.json();
-            timerEl.textContent = segundos;
-            if (segundos <= 0) {
-                alert('Se acabó el tiempo para responder. La partida terminará.');
-                return window.location.href = "/partida/finalizarPartida";
-            }
-        } catch (e) {
-            console.error('Error al refrescar timer', e);
-        }
+    const timerElement = document.getElementById('tiempo-restante');
+    const form = document.getElementById('form-respuesta');
+
+    // Actualizar el timer en pantalla
+    function actualizarTimer() {
+        timerElement.textContent = tiempoRestante;
     }
 
-    // Primera llamada e intervalo cada 1 000 ms
-    refrescarTimer();
-    setInterval(refrescarTimer, 1000);
+    function cuentaRegresiva() {
+        if (tiempoRestante <= 0) {
+            alert('Se acabó el tiempo para responder. La partida terminará.');
+            // Redirigir al endpoint que finaliza la partida
+            window.location.href = "/partida/finalizarPartida";
+            return;
+        }
+        tiempoRestante--;
+        actualizarTimer();
+        setTimeout(cuentaRegresiva, 1000);
+    }
+    
+    actualizarTimer();
+    cuentaRegresiva();
 </script>

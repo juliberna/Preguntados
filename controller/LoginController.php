@@ -24,7 +24,7 @@ class LoginController
     ]);
   }
 
-  public function loguearse()
+  public function procesar()
   {
     $email = $_POST["email"];
     $password = $_POST["password"];

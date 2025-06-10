@@ -31,11 +31,6 @@ class PartidaController
 
     public function jugar()
     {
-        if (!isset($_SESSION["usuario_id"])) {
-            header("Location: /login/show");
-            exit();
-        }
-
         $categorias = $this->categoriaModel->getCategorias();
 
         $mostrarBoton = true;
