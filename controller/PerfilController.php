@@ -24,8 +24,7 @@ class PerfilController
     }
 
     $this->view->render("perfil", array_merge([
-      'title' => 'Perfil Usuario',
-      'css' => '<link rel="stylesheet" href="/public/css/perfil.css">'
+      'title' => 'Perfil Usuario'
     ], $usuario));
   }
 }

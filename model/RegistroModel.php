@@ -53,4 +53,13 @@ class RegistroModel
     }
     return false;
   }
+
+  public function asignarRol($id_usuario) {
+    $result = $this->database->query("SELECT id_rol FROM roles WHERE nombre_rol = 'jugador'");
+    $id_rol = $result[0]['id_rol'] ?? null;
+
+    if ($id_rol) {
+      $this->database->execute("INSERT INTO usuario_rol (id_usuario, id_rol) VALUES ($id_usuario, $id_rol)");
+    }
+  }
 }

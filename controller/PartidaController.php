@@ -54,7 +54,6 @@ class PartidaController
 
         $this->view->render("ruleta", [
             'title' => 'Ruleta',
-            'css' => '<link rel="stylesheet" href="/public/css/perfil.css">',
             'categorias' => $categorias,
             'posicionGanadora' => $indiceCategoria,
             'mostrarBoton' => $mostrarBoton,

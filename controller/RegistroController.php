@@ -16,8 +16,7 @@ class RegistroController
   public function show()
   {
     $this->view->render("register", [
-      'title' => 'Registrarse',
-      'css' => '<link rel="stylesheet" href="/public/css/styles.css">'
+      'title' => 'Registrarse'
     ]);
   }
 
@@ -67,6 +66,7 @@ class RegistroController
     );
 
     $idUsuario = $result["idUsuario"];
+    $this->model->asignarRol($idUsuario);
 
     if ($idUsuario == null) {
       $this->renderErrorView('Error de Registro', 'No se pudo crear tu cuenta. Intentá de nuevo más tarde.');
@@ -92,7 +92,6 @@ class RegistroController
     $email = $_SESSION['email'];
     $this->view->render("registroSuccess", [
       'title' => 'Validacion',
-      'css' => '<link rel="stylesheet" href="/public/css/styles.css">',
       'email' => $email
     ]);
   }
@@ -114,7 +113,6 @@ class RegistroController
 
     $this->view->render("verificacionSuccess", [
       'title' => '¡Cuenta verificada!',
-      'css' => '<link rel="stylesheet" href="/public/css/styles.css">',
       'message' => 'Tu correo ha sido validado correctamente. Ya podés ingresar al sistema.'
     ]);
   }
@@ -141,7 +139,6 @@ class RegistroController
   {
     $this->view->render("error", [
       'title' => $title,
-      'css' => '<link rel="stylesheet" href="/public/css/styles.css">',
       'message' => $message
     ]);
   }

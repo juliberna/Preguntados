@@ -11,9 +11,14 @@ class HomeController
 
   public function show()
   {
-      $this->view->render("home", [
-          'title' => 'Home Usuario',
-          'css' => '<link rel="stylesheet" href="/public/css/perfil.css">'
+    if ($_SESSION['esEditor']) {
+      $this->view->render("homeEditor", [
+        'title' => 'Panel Editor'
       ]);
+    } else {
+      $this->view->render("home", [
+        'title' => 'Home Jugador'
+      ]);
+    }
   }
 }
