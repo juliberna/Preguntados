@@ -1,14 +1,13 @@
 {{> navbar}}
-<main class="fondo text-white">
-  <div class="container py-5 text-center">
+<main class="main-height bg-fondo d-flex justify-content-center align-items-center p-2">
+  <div class="container mt-3 text-center">
     <p>Vas a obtener una categoría aleatoria</p>
 
-    <!-- Ruleta estilo carrusel/caja -->
     <div id="ruleta-container" class="my-4 overflow-hidden border rounded"
          style="width: 600px; height: 120px; margin: 0 auto; background: #222; position: relative;">
       <div id="ruleta" class="d-flex" style="transition: transform 3s ease-out;">
         {{#categorias}}
-          <div class="categoria px-4 d-flex flex-column align-items-center justify-content-center"
+          <div class="px-4 d-flex flex-column align-items-center justify-content-center"
                style="min-width: 150px;">
             <img src="/public/images/logo.png" style="width: 60px; height: 60px;" alt="{{nombre}}">
             <span>{{nombre}}</span>

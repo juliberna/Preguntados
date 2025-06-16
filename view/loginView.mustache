@@ -1,28 +1,32 @@
-<div class="info me-5">
-  <div class="image-container">
-    <img src="/public/images/logo.png" alt="Logo de Preguntopolis">
-    <h1 class="title">Preguntopolis</h1>
+<main class="bg-fondo min-vh-100 d-flex flex-column flex-md-row justify-content-center align-items-center px-3 py-4">
+  <div class="d-flex flex-column align-items-center gap-3 me-5">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <img src="/public/images/logo.png" alt="Logo de Preguntopolis" style="max-width: 100px">
+      <h1 class="fs-1" style="font-family: 'Baloo', cursive">Preguntopolis</h1>
+    </div>
+    <p>Inicia sesión para continuar tu aventura</p>
   </div>
-  <p>Inicia sesión para continuar tu aventura</p>
-</div>
 
-<div class="form-container">
-  <form action="/login/procesar" method="POST" enctype="multipart/form-data">
-    <div class="mb-4">
-      <label for="email" class="form-label">Correo electrónico</label>
-      <input type="email" class="form-control input" name="email" id="email" placeholder="email@ejemplo.com" required>
+  <div class="bg-opacity-75 text-white rounded-4 p-4" style="background: #511F3B;max-width: 500px; width: 100%">
+    <form action="/login/procesar" method="POST" enctype="multipart/form-data">
+      <div class="mb-4">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control input" name="email" id="email" placeholder="email@ejemplo.com" required>
+      </div>
+      <div class="mb-4">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control input" name="password" id="password" placeholder="Contraseña"
+               required>
+      </div>
+      <button type="submit" class="btn btn-form w-100 mb-4 text-white p-2">Iniciar sesión
+      </button>
+      {{#error}}
+        <p class="text-danger text-center">{{error}}</p>
+      {{/error}}
+    </form>
+    <div class="text-center">
+      <p class="">¿No tienes cuenta?</p>
+      <a href="/registro/show" class="text-white text-decoration-underline">Regístrate</a>
     </div>
-    <div class="mb-4">
-      <label for="password" class="form-label">Contraseña</label>
-      <input type="password" class="form-control input" name="password" id="password" placeholder="Contraseña" required>
-    </div>
-    <button type="submit" class="btn btn-form w-100 mb-5">Iniciar sesión</button>
-    {{#error}}
-      <p class="text-danger text-center">{{error}}</p>
-    {{/error}}
-  </form>
-  <div class="text-center">
-    <p class="">¿No tienes cuenta?</p>
-    <a href="/registro/show" class="text-white text-decoration-underline">Regístrate</a>
   </div>
-</div>
+</main>

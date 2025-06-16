@@ -1,35 +1,38 @@
 {{> navbar}}
-<main class="fondo">
+<main class="main-height bg-fondo d-flex justify-content-center align-items-center p-2">
   <div class="perfil-grid">
-    <div class="card perfil-card">
-      <div class="perfil-top">
+    <div class="card p-2" style="grid-row: span 2">
+      <div class="d-flex flex-column align-items-center justify-content-center flex-grow-1">
         <img src="/public/uploads/{{foto_perfil_url}}" alt="perfil" class="perfil-img">
-        <div class="nombre">{{nombre_usuario}}</div>
+        <div class="fs-1 mt-3 text-white" style="text-shadow: 1px 1px black">{{nombre_usuario}}</div>
       </div>
-      <div class="info">Nivel 7<br>Ranking #125</div>
+      <div class="fs-6 mt-3" style="color: #ddd">Nivel 7<br>Ranking #125</div>
     </div>
 
-    <div class="card partidas-card">
+    <div class="card" style="grid-column: 2">
       <p class="fs-4 text-white">Partidas:</p>
-      <span class="mb-2 fs-5"><strong>54 Jugadas</strong></span>
-      <span class="ganadas mb-2 fs-5">29 Ganadas</span>
-      <span class="perdidas mb-2 fs-5">25 Perdidas</span>
-    </div>
-
-    <div class="card categorias-card">
-      <p class="fs-4 text-white">Categorías destacadas:</p><br>
-      <div class="categoria-botones">
-        <span class="categoria-btn historia">Historia</span>
-        <span class="categoria-btn entretenimiento">Entretenimiento</span>
-        <span class="categoria-btn ciencia">Ciencia</span>
+      <div class="d-flex flex-column align-items-center gap-3">
+        <span class="fs-5"><strong>54 Jugadas</strong></span>
+        <span class="fs-5" style="color: #59ff59">29 Ganadas</span>
+        <span class="fs-5" style="color: #ff6060">25 Perdidas</span>
       </div>
     </div>
 
-    <div class="card qr-card justify-content-center align-items-center">
-      <img class="qr" src="/public/images/ImagenQR.png" alt="QR">
+    <div class="card" style="grid-column: 2;grid-row: 2">
+      <p class="fs-4 text-white">Categorías destacadas:</p><br>
+      <div class="d-flex flex-column align-items-center gap-3">
+        <span class="py-2 px-3 text-white"
+              style="background: #cc9600; width: 250px; border-radius: 40px">Historia</span>
+        <span class="py-2 px-3 text-white" style="background: #c3007c; width: 250px; border-radius: 40px">Entretenimiento</span>
+        <span class="py-2 px-3 text-white" style="background: #008e39; width: 250px; border-radius: 40px">Ciencia</span>
+      </div>
     </div>
 
-    <div class="card mapa-card">
+    <div class="card justify-content-center align-items-center" style="grid-column: 3">
+      <img class="p-2" src="/public/images/ImagenQR.png" alt="QR" style="max-height: 250px;max-width: 250px">
+    </div>
+
+    <div class="card mapa-card p-2" style="grid-column: 3">
       <p class="fs-4 text-white">Ubicación: <span></span></p>
       <div>
         <img src="/public/images/mapa.png" alt="Imagen del mapa" style="max-height: 200px">

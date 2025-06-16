@@ -25,6 +25,7 @@ require_once "model/PerfilModel.php";
 require_once "model/CategoriaModel.php";
 require_once "model/PreguntaModel.php";
 require_once "model/PartidaModel.php";
+require_once "model/RolModel.php";
 
 
 include_once 'vendor/mustache/src/Mustache/Autoloader.php';
@@ -81,7 +82,8 @@ class Configuration
   {
     return new LoginController(
       new LoginModel($this->getDatabase()),
-      $this->getViewer()
+      $this->getViewer(),
+      new RolModel($this->getDatabase())
     );
   }
 
