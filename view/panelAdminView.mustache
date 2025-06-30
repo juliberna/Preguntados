@@ -2,7 +2,7 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <form method="GET" class="d-flex gap-2">
-            <select name="filtro" class="form-select form-select-sm">
+            <select name="filtro" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="dia" {{#filtro_dia}}selected{{/filtro_dia}}>Día</option>
                 <option value="semana" {{#filtro_semana}}selected{{/filtro_semana}}>Semana</option>
                 <option value="mes" {{#filtro_mes}}selected{{/filtro_mes}}>Mes</option>

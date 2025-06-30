@@ -43,6 +43,7 @@ class AdminController{
         $this->view->render("panelAdmin", [
             'title' => 'Dashboard',
             'total_jugadores' => $total_jugadores,
+            'filtro_Actual' => $filtro,
         ]);
     }
 

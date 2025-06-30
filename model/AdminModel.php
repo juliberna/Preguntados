@@ -62,7 +62,7 @@ class AdminModel{
         $sql = "SELECT COUNT(*) AS cantidad
                 FROM preguntas p
                 WHERE p.estado = 'activa' AND p.fecha_inicio BETWEEN '$desde' AND '$hasta'";
-        return $this->database->query($sql);
+        return $this->database->query($sql)[0]['cantidad'];
     }
 
     public function obtenerPromedioDePreguntasRespondidasCorrectamente($desde, $hasta)
@@ -71,7 +71,7 @@ class AdminModel{
                 FROM partida_pregunta pp JOIN partidas p ON pp.id_partida = p.id_partida
                 WHERE p.fecha_inicio BETWEEN '$desde' AND '$hasta'
         ";
-        return $this->database->query($sql);
+        return $this->database->query($sql)[0]['cantidad'];
     }
 
 
