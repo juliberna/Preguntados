@@ -20,6 +20,7 @@ require_once("controller/InicioController.php");
 require_once("controller/PartidaController.php");
 require_once("controller/PerdioController.php");
 require_once("controller/ReporteController.php");
+require_once("controller/AdminController.php");
 
 require_once("model/GroupModel.php");
 require_once("model/SongModel.php");
@@ -35,6 +36,7 @@ require_once("model/PartidaModel.php");
 require_once("model/PreguntaModel.php");
 require_once("model/EditorModel.php");
 require_once("model/UbicacionModel.php");
+require_once("model/AdminModel.php");
 
 require_once("controller/CrearPreguntaController.php");
 require_once("model/CrearPreguntaModel.php");
@@ -115,6 +117,14 @@ class Configuration
             $this->getViewer(),
             new EditorModel($this->getDatabase()),
             new PreguntaModel($this->getDatabase())
+        );
+    }
+
+    public function getAdminController()
+    {
+        return new AdminController(
+            new AdminModel($this->getDatabase()),
+            $this->getViewer()
         );
     }
 

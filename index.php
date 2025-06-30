@@ -46,6 +46,21 @@ if (isset($_SESSION['usuario_id'])) {
             exit();
         }
     }
+
+    // Si la ruta empieza con 'admin/', solo los editores pueden acceder
+    if (str_starts_with($ruta, 'admin/') && !in_array('admin', $roles, true)) {
+        header("Location: /lobby/show");
+        exit();
+    }
+
+    // Si el usuario es ADMIN, solo puede acceder a rutas que empiezan con 'admin/'
+    // Tambien puede acceder a las rutas publicas
+    if (in_array('admin', $roles, true)) {
+        if (!str_starts_with($ruta, 'admin/') && !in_array($ruta, $rutasPublicas, true)) {
+            header("Location: /admin/show");
+            exit();
+        }
+    }
 }
 
 require_once "Configuration.php";

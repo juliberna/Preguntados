@@ -44,8 +44,8 @@ class AdminModel{
     public function obtenerTotalUsuariosPorFecha($desde, $hasta)
     {
         $sql = "SELECT COUNT(*) AS cantidad
-                FROM usuarios u
-                WHERE u.fecha_registro BETWEEN '$desde' AND '$hasta'";
+                FROM usuarios u JOIN usuario_rol ur ON ur.id_usuario = u.id_usuario
+                WHERE ur.id_rol = 1 AND u.fecha_registro BETWEEN '$desde' AND '$hasta'";
         return $this->database->query($sql);
     }
 

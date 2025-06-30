@@ -1,0 +1,137 @@
+{{> navbar}}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="GET" class="d-flex gap-2">
+            <select name="filtro" class="form-select form-select-sm">
+                <option value="dia" {{#filtro_dia}}selected{{/filtro_dia}}>Día</option>
+                <option value="semana" {{#filtro_semana}}selected{{/filtro_semana}}>Semana</option>
+                <option value="mes" {{#filtro_mes}}selected{{/filtro_mes}}>Mes</option>
+                <option value="anio" {{#filtro_anio}}selected{{/filtro_anio}}>Año</option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm">Filtrar</button>
+        </form>
+    </div>
+
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="bg-light p-3 rounded shadow-sm">
+                <h4>{{total_jugadores}}</h4>
+                <p class="text-muted">Jugadores</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-light p-3 rounded shadow-sm">
+                <h4>{{total_partidas}}</h4>
+                <p class="text-muted">Par. jugadas</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-light p-3 rounded shadow-sm">
+                <h4>{{total_preguntas}}</h4>
+                <p class="text-muted">Preguntas</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="bg-light p-3 rounded shadow-sm">
+                <h4>{{usuarios_nuevos}}</h4>
+                <p class="text-muted">Us. nuevos</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <canvas id="graficoEdad"></canvas>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div id="map" style="height: 250px; border-radius: 10px;"></div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <canvas id="graficoGenero"></canvas>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="bg-white rounded shadow-sm p-3">
+                <h5 class="mb-3">Preguntas respondidas correctamente</h5>
+                <canvas id="graficoCorrectasLinea"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{! Incluye los scripts necesarios }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<script>
+    // Gráfico por edad
+    new Chart(document.getElementById('graficoEdad'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Menor', 'Mediana edad', 'Mayor'],
+                datasets: [{
+                    data: {{&datos_edad}},
+        backgroundColor: ['#a78bfa', '#7c3aed', '#5b21b6']
+    }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Gráfico por género
+    new Chart(document.getElementById('graficoGenero'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Femenino', 'Masculino', 'Otro'],
+                datasets: [{
+                    data: {{&datos_genero}},
+        backgroundColor: ['#f472b6', '#60a5fa', '#a3a3a3']
+    }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Gráfico de respuestas correctas por fecha
+    new Chart(document.getElementById('graficoCorrectasLinea'), {
+        type: 'line',
+        data: {
+            labels: {{&fechas}},
+    datasets: [{
+        label: '% correctas',
+        data: {{&porcentajes}},
+    fill: false,
+        borderColor: '#6366f1',
+        tension: 0.3
+    }]
+    },
+    options: {
+        scales: {
+            y: {
+                min: 0,
+                    max: 100,
+                    ticks: { callback: val => val + '%' }
+            }
+        }
+    }
+    });
+
+    // Mapa interactivo
+    const map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const puntos = {{&paises_usuarios}};
+    puntos.forEach(async p => {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(p.nombre_pais)}&format=json&limit=1`, {
+            headers: { 'User-Agent': 'Preguntopolis/1.0' }
+        });
+        const data = await res.json();
+        if (data.length) {
+            const { lat, lon } = data[0];
+            L.marker([lat, lon]).addTo(map).bindPopup(`${p.nombre_pais}: ${p.cantidad} usuarios`);
+        }
+    });
+</script>
