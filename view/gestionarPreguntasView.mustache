@@ -1,6 +1,7 @@
 {{> navbar}}
 
-<div class="container-fluid vh-100" style="background-image: url('../public/images/fondo-1.png'); background-position: center center;background-size: cover;background-attachment: fixed;background-repeat: no-repeat;">
+<div class="container-fluid vh-100"
+     style="background-image: url('../public/images/fondo-1.png'); background-position: center center;background-size: cover;background-attachment: fixed;background-repeat: no-repeat;">
     <h1 class="text-center text-dark fw-bold mb-4 mt-4">{{title}}</h1>
 
     <form method="GET" action="/editor/gestionarPreguntas" class="row mb-4 justify-content-center">
@@ -15,7 +16,9 @@
         <div class="col-md-4 mb-2 mb-md-0">
             <select name="categoria" class="form-select"
                     onchange="this.form.submit()">
-                <option value="todasLasCategorias" {{#categoria_todas}}selected{{/categoria_todas}}>Todas las categorías</option>
+                <option value="todasLasCategorias" {{#categoria_todas}}selected{{/categoria_todas}}>Todas las
+                    categorías
+                </option>
                 {{#categorias}}
                     <option value="{{id_categoria}}" {{#seleccionada}}selected{{/seleccionada}}>{{nombre}}</option>
                 {{/categorias}}
@@ -23,78 +26,84 @@
         </div>
 
         <div class="col-md-2">
-            <button type="submit" class="btn fw-bold w-100" style="background-color: #a76ac6; color: white;">Buscar</button>
+            <button type="submit" class="btn fw-bold w-100" style="background-color: #a76ac6; color: white;">Buscar
+            </button>
         </div>
     </form>
 
+    {{^preguntas}}
+        <div class="alert alert-info text-center mx-auto"
+             style="background-color: rgba(167, 106, 198, 0.2); color: #4c1765; border: 1px solid #a76ac6; width: 80%;"
+             role="alert">
+            <p>No hay preguntas de acuerdo a los filtros.</p>
+        </div>
+    {{/preguntas}}
 
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle">
-            <thead class="table-primary text-center">
-            <tr>
-                <th>Pregunta</th>
-                <th>Categoría</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#preguntas}}
+    {{#hayPreguntas}}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-primary text-center">
                 <tr>
-                    <td>{{pregunta}}</td>
-                    <td>{{nombre}}</td>
-                    <td class="text-center">
-                        {{#es_activa}}<span class="badge bg-success">Activa</span>{{/es_activa}}
-                        {{#es_deshabilitada}}<span class="badge bg-secondary">Deshabilitada</span>{{/es_deshabilitada}}
-                        {{#es_reportada}}<span class="badge bg-danger">Reportada</span>{{/es_reportada}}
-                        {{#es_sugerida}}<span class="badge bg-info text-dark">Sugerida</span>{{/es_sugerida}}
-                    </td>
-                    <td class="text-center">
-                        {{#es_activa}}
-                            <form method="GET" action="/editor/editar" class="d-inline">
-                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                                <button type="submit" class="btn btn-sm btn-warning me-1">Editar</button>
-                            </form>
-                            <form method="GET" action="/editor/desactivar" class="d-inline">
-                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                                <button type="submit" class="btn btn-sm btn-danger">Desactivar</button>
-                            </form>
-                        {{/es_activa}}
-
-                        {{#es_deshabilitada}}
-                            <form method="GET" action="/editor/editar" class="d-inline">
-                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                                <button type="submit" class="btn btn-sm btn-warning me-1">Editar</button>
-                            </form>
-                            <form method="GET" action="/editor/activar" class="d-inline">
-                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                                <button type="submit" class="btn btn-sm btn-success">Activar</button>
-                            </form>
-                        {{/es_deshabilitada}}
-
-                        {{#es_reportada}}
-                            <form method="GET" action="/editor/reportes" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-danger">Ver Reportes</button>
-                            </form>
-                        {{/es_reportada}}
-
-                        {{#es_sugerida}}
-                            <form method="GET" action="/editor/verSugerencia" class="d-inline">
-                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                                <input type="hidden" name="origen" value="gestionar">
-                                <button type="submit" class="btn btn-sm btn-info text-dark">Ver Pregunta Sugerida</button>
-                            </form>
-                        {{/es_sugerida}}
-                    </td>
+                    <th>Pregunta</th>
+                    <th>Categoría</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
-            {{/preguntas}}
+                </thead>
+                <tbody>
+                {{#preguntas}}
+                    <tr>
+                        <td>{{pregunta}}</td>
+                        <td>{{nombre}}</td>
+                        <td class="text-center">
+                            {{#es_activa}}<span class="badge bg-success">Activa</span>{{/es_activa}}
+                            {{#es_deshabilitada}}
+                                <span class="badge bg-secondary">Deshabilitada</span>{{/es_deshabilitada}}
+                            {{#es_reportada}}<span class="badge bg-danger">Reportada</span>{{/es_reportada}}
+                            {{#es_sugerida}}<span class="badge bg-info text-dark">Sugerida</span>{{/es_sugerida}}
+                        </td>
+                        <td class="text-center">
+                            {{#es_activa}}
+                                <form method="GET" action="/editor/editar" class="d-inline">
+                                    <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                    <button type="submit" class="btn btn-sm btn-warning me-1">Editar</button>
+                                </form>
+                                <form method="GET" action="/editor/desactivar" class="d-inline">
+                                    <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                    <button type="submit" class="btn btn-sm btn-danger">Desactivar</button>
+                                </form>
+                            {{/es_activa}}
 
-            {{^preguntas}}
-                <tr>
-                    <td colspan="5" class="text-center text-muted">No hay preguntas para esta categoría.</td>
-                </tr>
-            {{/preguntas}}
-            </tbody>
-        </table>
-    </div>
+                            {{#es_deshabilitada}}
+                                <form method="GET" action="/editor/editar" class="d-inline">
+                                    <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                    <button type="submit" class="btn btn-sm btn-warning me-1">Editar</button>
+                                </form>
+                                <form method="GET" action="/editor/activar" class="d-inline">
+                                    <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                    <button type="submit" class="btn btn-sm btn-success">Activar</button>
+                                </form>
+                            {{/es_deshabilitada}}
+
+                            {{#es_reportada}}
+                                <form method="GET" action="/editor/reportes" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger">Ver Reportes</button>
+                                </form>
+                            {{/es_reportada}}
+
+                            {{#es_sugerida}}
+                                <form method="GET" action="/editor/verSugerencia" class="d-inline">
+                                    <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                    <input type="hidden" name="origen" value="gestionar">
+                                    <button type="submit" class="btn btn-sm btn-info text-dark">Ver Pregunta Sugerida
+                                    </button>
+                                </form>
+                            {{/es_sugerida}}
+                        </td>
+                    </tr>
+                {{/preguntas}}
+                </tbody>
+            </table>
+        </div>
+    {{/hayPreguntas}}
 </div>

@@ -6,7 +6,7 @@ class EditorController
     private $model;
     private $preguntaModel;
 
-    public function __construct($view,$model, $preguntaModel)
+    public function __construct($view, $model, $preguntaModel)
     {
         $this->model = $model;
         $this->view = $view;
@@ -20,26 +20,20 @@ class EditorController
         ]);
     }
 
+    public function sugerencias()
+    {
+        $filtros = $this->prepararFiltrosYCategorias();
 
-    public function sugerencias(){
-        $terminoBusqueda = $_GET['terminoBusqueda'] ?? '';
-        $id_categoria = $_GET['categoria'] ?? 'todasLasCategorias';
-
-        $categorias = $this->model->getCategorias();
-        foreach ($categorias as &$categoria) {
-            $categoria['seleccionada'] = ($categoria['id_categoria'] == $id_categoria);
-        }
-
-        $preguntasSugeridas = $this->model->getPreguntasSugeridas($terminoBusqueda, $id_categoria);
+        $preguntasSugeridas = $this->model->getPreguntasSugeridas($filtros['terminoBusqueda'], $filtros['id_categoria']);
         $haySugeridas = !empty($preguntasSugeridas);
 
         $this->view->render("sugerencias", [
             'title' => 'Sugerencias de usuarios',
             'sugeridas' => $preguntasSugeridas,
             'haySugeridas' => $haySugeridas,
-            'terminoBusqueda' => $terminoBusqueda,
-            'categorias' => $categorias,
-            'categoria_todas' => $id_categoria === 'todasLasCategorias'
+            'terminoBusqueda' => $filtros['terminoBusqueda'],
+            'categorias' => $filtros['categorias'],
+            'categoria_todas' => $filtros['id_categoria'] === 'todasLasCategorias'
         ]);
     }
 
@@ -73,9 +67,10 @@ class EditorController
         ]);
     }
 
-    public function activarPregunta(){
+    public function activarPregunta()
+    {
 
-        $id= $_GET['id'];
+        $id = $_GET['id'];
 
         $this->model->activarPreguntaSugerida($id);
         $this->model->fechaResolucionSugerencia($id);
@@ -84,8 +79,9 @@ class EditorController
 
     }
 
-    public function desactivarPregunta(){
-        $id= $_GET['id'];
+    public function desactivarPregunta()
+    {
+        $id = $_GET['id'];
         $this->model->desactivarPreguntaSugerida($id);
         $this->model->fechaResolucionSugerencia($id);
         $this->model->actualizarEstadoPregunta($id, 'rechazada');
@@ -94,19 +90,12 @@ class EditorController
 
     public function gestionarPreguntas()
     {
-        $id_categoria = $_GET['categoria'] ?? 'todasLasCategorias';
-        $terminoBusqueda = $_GET['terminoBusqueda'] ?? '';
+        $filtros = $this->prepararFiltrosYCategorias();
+        $categorias = $filtros['categorias'];
 
-        $categorias = $this->model->getCategorias();
-        foreach ($categorias as &$categoria) {
-            $categoria['seleccionada'] = ($categoria['id_categoria'] == $id_categoria);
-        }
-
-        if ($id_categoria === 'todasLasCategorias') {
-            $preguntas = $this->model->getPreguntas($terminoBusqueda);
-        } else {
-            $preguntas = $this->model->getPreguntasPorCategoria((int)$id_categoria, $terminoBusqueda);
-        }
+        $preguntas = ($filtros['id_categoria'] === 'todasLasCategorias')
+            ? $this->model->getPreguntas($filtros['terminoBusqueda'])
+            : $this->model->getPreguntasPorCategoria((int)$filtros['id_categoria'], $filtros['terminoBusqueda']);
 
         foreach ($preguntas as &$pregunta) {
             $estado = $pregunta['estado'];
@@ -119,13 +108,15 @@ class EditorController
         $this->view->render("gestionarPreguntas", [
             'title' => 'Gestión de Preguntas',
             'categorias' => $categorias,
-            'categoria_todas' => $id_categoria === 'todasLasCategorias',
+            'categoria_todas' => $filtros['id_categoria'] === 'todasLasCategorias',
             'preguntas' => $preguntas,
-            'terminoBusqueda' => $terminoBusqueda,
+            'terminoBusqueda' => $filtros['terminoBusqueda'],
+            'hayPreguntas' => !empty($preguntas),
         ]);
     }
 
-    public function desactivar(){
+    public function desactivar()
+    {
         $id_pregunta = $_GET['id_pregunta'] ?? '';
         $pregunta = $this->model->desactivarPregunta($id_pregunta);
 
@@ -133,7 +124,8 @@ class EditorController
         exit;
     }
 
-    public function activar(){
+    public function activar()
+    {
         $id_pregunta = $_GET['id_pregunta'] ?? '';
         $pregunta = $this->model->activarPregunta($id_pregunta);
 
@@ -141,7 +133,8 @@ class EditorController
         exit;
     }
 
-    public function editar(){
+    public function editar()
+    {
         $id_pregunta = $_GET['id_pregunta'] ?? '';
         $id_reporte = $_GET['id_reporte'] ?? '';
 
@@ -186,25 +179,19 @@ class EditorController
 
     public function reportes()
     {
-        $terminoBusqueda = $_GET['terminoBusqueda'] ?? '';
-        $id_categoria = $_GET['categoria'] ?? 'todasLasCategorias';
-
-        $categorias = $this->model->getCategorias();
-        foreach ($categorias as &$categoria) {
-            $categoria['seleccionada'] = ($categoria['id_categoria'] == $id_categoria);
-        }
+        $filtros = $this->prepararFiltrosYCategorias();
 
         // Obtener reportes filtrados
-        $preguntasReportadas = $this->preguntaModel->getPreguntasReportadasConDetalles($terminoBusqueda, $id_categoria);
+        $preguntasReportadas = $this->preguntaModel->getPreguntasReportadasConDetalles($filtros['terminoBusqueda'], $filtros['id_categoria']);
 
         $this->view->render('preguntasReportadas', [
             'title' => 'Preguntas Reportadas',
             'reportes' => $preguntasReportadas,
-            'terminoBusqueda' => $terminoBusqueda,
+            'terminoBusqueda' => $filtros['terminoBusqueda'],
             'hayReportes' => !empty($preguntasReportadas),
-            'categorias' => $categorias,
-            'categoria_todas' => $id_categoria === 'todasLasCategorias',
-            'id_categoria' => $id_categoria
+            'categorias' => $filtros['categorias'],
+            'categoria_todas' => $filtros['id_categoria'] === 'todasLasCategorias',
+            'id_categoria' => $filtros['id_categoria']
         ]);
 
     }
@@ -231,6 +218,24 @@ class EditorController
 
         header("Location: /editor/reportes");
         exit;
+    }
+
+    private function prepararFiltrosYCategorias(): array
+    {
+        $terminoBusqueda = $_GET['terminoBusqueda'] ?? '';
+        $id_categoria = $_GET['categoria'] ?? 'todasLasCategorias';
+
+        $categorias = $this->model->getCategorias();
+        foreach ($categorias as &$categoria) {
+            $categoria['seleccionada'] = ($categoria['id_categoria'] == $id_categoria);
+        }
+
+        return [
+            'terminoBusqueda' => $terminoBusqueda,
+            'id_categoria' => $id_categoria,
+            'categorias' => $categorias,
+            'categoria_todas' => $id_categoria === 'todasLasCategorias'
+        ];
     }
 
 }
