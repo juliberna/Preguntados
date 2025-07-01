@@ -9,6 +9,7 @@
         <div class="container">
             <p class="fw-bold fs-5 text-center">Pregunta:</p>
             <input type="hidden" name="id_pregunta" value="{{pregunta.id_pregunta}}">
+            <input type="hidden" name="id_reporte" value="{{id_reporte}}">
 
             <div class="mb-3">
                 <input type="text" name="pregunta" value="{{pregunta.pregunta}}" class="form-control text-center fw-semibold rounded-pill" style="color: #6B4468;">
@@ -25,7 +26,7 @@
             {{/respuestas}}
             </div>
             <button type="submit" class="btn btn-success mt-3">Guardar</button>
-            <a href="/editor/gestionarPreguntas" class="btn btn-danger mt-3">Cancelar</a>
+            <a href="{{#id_reporte}}/editor/reportes{{/id_reporte}}{{^id_reporte}}/editor/gestionarPreguntas{{/id_reporte}}" class="btn btn-secondary mt-3">Cancelar</a>
         </div>
     </form>
 </main>

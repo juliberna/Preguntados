@@ -70,7 +70,11 @@ class EditorController
         }
 
         foreach ($preguntas as &$pregunta) {
-            $pregunta['activa'] = $pregunta['estado'] === 'activa';
+            $estado = $pregunta['estado'];
+            $pregunta['es_activa'] = $estado === 'activa';
+            $pregunta['es_deshabilitada'] = $estado === 'deshabilitada';
+            $pregunta['es_reportada'] = $estado === 'reportada';
+            $pregunta['es_sugerida'] = $estado === 'sugerida';
         }
 
         $this->view->render("gestionarPreguntas", [
@@ -102,11 +106,6 @@ class EditorController
         $id_pregunta = $_GET['id_pregunta'] ?? '';
         $id_reporte = $_GET['id_reporte'] ?? '';
 
-        if ($id_reporte) {
-            $this->preguntaModel->actualizarEstadoReporte($id_reporte, 'resuelto');
-            $this->preguntaModel->actualizarEstadoPregunta($id_pregunta, 'activa');
-        }
-
         $pregunta = $this->model->getPreguntaPorId($id_pregunta);
         $pregunta = $pregunta[0] ?? null;
         $respuestas = $this->model->getRespuestasPorPregunta($id_pregunta);
@@ -114,13 +113,15 @@ class EditorController
         $this->view->render("editarPregunta", [
             'title' => 'Editar Pregunta',
             'pregunta' => $pregunta,
-            'respuestas' => $respuestas
+            'respuestas' => $respuestas,
+            'id_reporte' => $id_reporte,
         ]);
     }
 
     public function guardarEdicion()
     {
         $id_pregunta = $_POST['id_pregunta'] ?? null;
+        $id_reporte = $_POST['id_reporte'] ?? null;
         $textoPregunta = $_POST['pregunta'] ?? '';
         $respuestas = $_POST['respuestas'] ?? [];
         $ids_respuestas = $_POST['ids_respuestas'] ?? [];
@@ -131,6 +132,13 @@ class EditorController
             if (isset($ids_respuestas[$i])) {
                 $this->model->actualizarRespuesta((int)$ids_respuestas[$i], $respuesta);
             }
+        }
+
+        if ($id_reporte) {
+            $this->preguntaModel->actualizarEstadoReporte($id_reporte, 'resuelto');
+            $this->preguntaModel->actualizarEstadoPregunta($id_pregunta, 'activa');
+            header("Location: /editor/reportes");
+            exit();
         }
 
         header("Location: /editor/gestionarPreguntas");

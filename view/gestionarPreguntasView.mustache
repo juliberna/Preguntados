@@ -44,29 +44,45 @@
                     <td>{{pregunta}}</td>
                     <td>{{nombre}}</td>
                     <td class="text-center">
-                        {{#activa}}<span class="badge bg-success">Activa</span>{{/activa}}
-                        {{^activa}}<span class="badge bg-secondary">Inactiva</span>{{/activa}}
+                        {{#es_activa}}<span class="badge bg-success">Activa</span>{{/es_activa}}
+                        {{#es_deshabilitada}}<span class="badge bg-secondary">Deshabilitada</span>{{/es_deshabilitada}}
+                        {{#es_reportada}}<span class="badge bg-danger">Reportada</span>{{/es_reportada}}
+                        {{#es_sugerida}}<span class="badge bg-info text-dark">Sugerida</span>{{/es_sugerida}}
                     </td>
                     <td class="text-center">
-                    {{!        <a href="/editor/editar/{{id_pregunta}}{{! " class="btn btn-sm btn-warning me-1">Editar</a> }}
-                        <form method="GET" action="/editor/editar" class="d-inline">
-                            <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                            <button type="submit" class="btn btn-sm btn-warning me-1">
-                                Editar
-                            </button>
-                        </form>
-                    {{#activa}}
-                        <form action="/editor/desactivar/{{id_pregunta}}" method="GET" class="d-inline">
-                            <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Desactivar esta pregunta?')">Desactivar</button>
-                        </form>
-                    {{/activa}}
-                    {{^activa}}
-                        <form action="/editor/activar/{{id_pregunta}}" method="GET" class="d-inline">
-                            <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Activar esta pregunta?')">Activar</button>
-                        </form>
-                    {{/activa}}
+                        {{#es_activa}}
+                            <form method="GET" action="/editor/editar" class="d-inline">
+                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                <button type="submit" class="btn btn-sm btn-warning me-1">Editar</button>
+                            </form>
+                            <form method="GET" action="/editor/desactivar" class="d-inline">
+                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                <button type="submit" class="btn btn-sm btn-danger">Desactivar</button>
+                            </form>
+                        {{/es_activa}}
+
+                        {{#es_deshabilitada}}
+                            <form method="GET" action="/editor/editar" class="d-inline">
+                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                <button type="submit" class="btn btn-sm btn-warning me-1">Editar</button>
+                            </form>
+                            <form method="GET" action="/editor/activar" class="d-inline">
+                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                <button type="submit" class="btn btn-sm btn-success">Activar</button>
+                            </form>
+                        {{/es_deshabilitada}}
+
+                        {{#es_reportada}}
+                            <form method="GET" action="/editor/reportes" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Ver Reportes</button>
+                            </form>
+                        {{/es_reportada}}
+
+                        {{#es_sugerida}}
+                            <form method="GET" action="/editor/sugerencias" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-info text-dark">Ver Sugerencias</button>
+                            </form>
+                        {{/es_sugerida}}
                     </td>
                 </tr>
             {{/preguntas}}
