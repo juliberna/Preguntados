@@ -1,9 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-container py-2" style="background: #6B4468">
     <div class="container-fluid justify-content-between align-items-center">
-        <a class="d-flex align-items-center" href="/lobby/">
-            <img src="/public/images/logo.png" alt="Logo" height="50" class="d-inline-block align-text-top">
-        </a>
-
+        {{#esJugador}}
+            <a class="d-flex align-items-center" href="/lobby/show">
+                <img src="/public/images/logo.png" alt="Logo" height="50" class="d-inline-block align-text-top">
+            </a>
+        {{/esJugador}}
+        {{#esEditor}}
+            <a class="d-flex align-items-center" href="/editor/show">
+                <img src="/public/images/logo.png" alt="Logo" height="50" class="d-inline-block align-text-top">
+            </a>
+        {{/esEditor}}
         <span class="navbar-text mx-auto fw-bold text-white fs-2" style="font-family: 'Baloo', cursive">
         Preguntópolis
       </span>
