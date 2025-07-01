@@ -108,6 +108,14 @@ class RegistroController
         // Obtener país y ciudad desde backend
         $ubicacion = $this->ubicacionModel->obtenerPaisYCiudadPorCoordenadas($lat, $lng);
 
+        if (!$ubicacion || $ubicacion['pais'] === 'Desconocido' || $ubicacion['ciudad'] === 'Desconocido') {
+            $this->view->render("mapaRegistro", [
+                'title' => 'Elige tu ubicacion',
+                'error' => 'Seleccioná una ubicación válida en el mapa.'
+            ]);
+            return;
+        }
+
         // Crear / Obtener ids
         $idPais = $this->ubicacionModel->obtenerOCrearPais($ubicacion['pais']);
         $idCiudad = $this->ubicacionModel->obtenerOCrearCiudad($ubicacion['ciudad'], $idPais);

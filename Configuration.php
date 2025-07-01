@@ -19,7 +19,6 @@ require_once("controller/RuletaController.php");
 require_once("controller/InicioController.php");
 require_once("controller/PartidaController.php");
 require_once("controller/PerdioController.php");
-require_once("controller/ReporteController.php");
 
 require_once("model/GroupModel.php");
 require_once("model/SongModel.php");
@@ -118,13 +117,6 @@ class Configuration
         );
     }
 
-    public function getReporteController() {
-        return new ReporteController(
-            new PreguntaModel($this->getDatabase()),
-            $this->getViewer()
-        );
-    }
-
 
     public function getSongController()
     {
@@ -180,7 +172,8 @@ class Configuration
     {
         return new PartidaController(
             new PartidaModel($this->getDatabase()),
-            $this->getViewer()
+            $this->getViewer(),
+            new PreguntaModel($this->getDatabase())
         );
     }
 
