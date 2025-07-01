@@ -79,8 +79,10 @@
                         {{/es_reportada}}
 
                         {{#es_sugerida}}
-                            <form method="GET" action="/editor/sugerencias" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-info text-dark">Ver Sugerencias</button>
+                            <form method="GET" action="/editor/verSugerencia" class="d-inline">
+                                <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
+                                <input type="hidden" name="origen" value="gestionar">
+                                <button type="submit" class="btn btn-sm btn-info text-dark">Ver Pregunta Sugerida</button>
                             </form>
                         {{/es_sugerida}}
                     </td>

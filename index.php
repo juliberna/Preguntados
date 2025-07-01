@@ -1,13 +1,6 @@
 <?php
 session_start();
 
-// Error que hacia que el editor saliera siempre
-// Si el servidor pide el favicon, se ignora
-if ($_SERVER['REQUEST_URI'] === '/favicon.ico') {
-    http_response_code(204);
-    exit();
-}
-
 // Rutas accesibles sin estar logueado
 $rutasPublicas = [
     'login/show',
@@ -43,18 +36,6 @@ if (isset($_SESSION['usuario_id'])) {
 
     // Si la ruta es de editor y el usuario NO tiene el rol, lo sacamos.
     if (str_starts_with($ruta, 'editor/') && !in_array('editor', $roles, true)) {
-        error_log("Entro en primero");
-        session_unset();
-        session_destroy();
-        header("Location: /login/show");
-        exit();
-    }
-
-    if (in_array('editor', $roles, true) &&
-        !str_starts_with($ruta, 'editor/') &&
-        !in_array($ruta, $rutasPublicas, true)
-        ) {
-        error_log("Entro en segundo, " . $ruta);
         session_unset();
         session_destroy();
         header("Location: /login/show");

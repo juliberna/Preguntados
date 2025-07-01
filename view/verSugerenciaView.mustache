@@ -1,0 +1,55 @@
+{{> navbar}}
+<div class=" vh-100 text-dark"
+     style="background-image: url('../public/images/fondo-1.png'); background-position: center center;background-size: cover;background-attachment: fixed;background-repeat: no-repeat;">
+    <h1 class="text-center text-dark mb-4 mt-4 fw-bold">{{title}}</h1>
+    <div class="container mt-4 p-3 bg-white rounded shadow text-dark">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Pregunta:</label>
+            <p>{{pregunta.pregunta}}</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Categoría:</label>
+            <p>{{pregunta.nombre}}</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Usuario que sugirió:</label>
+            <p>{{autor.nombre_usuario}}, <small>{{autor.email}}</small></p>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Respuestas:</label>
+            <ul class="list-group">
+                {{#respuestas}}
+                    <li class="list-group-item {{#esCorrecta}}list-group-item-success fw-bold{{/esCorrecta}}">
+                        {{respuesta}}
+                        {{#esCorrecta}}<span class="badge bg-success float-end">Correcta</span>{{/esCorrecta}}
+                    </li>
+                {{/respuestas}}
+            </ul>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/editor/activarPregunta?id={{pregunta.id_pregunta}}"
+            class="btn btn-success"
+            onclick="return confirm('¿Activar esta pregunta sugerida?');">
+            Activar
+            </a>
+
+            <a href="/editor/desactivarPregunta?id={{pregunta.id_pregunta}}"
+            class="btn btn-danger"
+            onclick="return confirm('¿Descartar esta pregunta sugerida?');">
+            Descartar
+            </a>
+
+            {{#volver_a_gestionar}}
+                <a href="/editor/gestionarPreguntas" class="btn btn-secondary">Volver</a>
+            {{/volver_a_gestionar}}
+
+            {{^volver_a_gestionar}}
+                <a href="/editor/sugerencias" class="btn btn-secondary">Volver</a>
+            {{/volver_a_gestionar}}
+        </div>
+    </div>
+</div>

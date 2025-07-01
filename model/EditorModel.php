@@ -17,18 +17,35 @@ class EditorModel
         return $this->db->query($sql);
     }
 
-    public function getPreguntasSugeridas(){
+    public function getPreguntasSugeridas()
+    {
 
-        $sql = "SELECT * FROM 
-            preguntas p JOIN 
-            categoria c ON 
-            p.id_categoria = c.id_categoria
-         WHERE estado = 'sugerida'";
+        $sql = "
+    SELECT p.*, c.nombre, u.nombre_usuario, u.email
+    FROM preguntas p
+    JOIN categoria c ON p.id_categoria = c.id_categoria
+    JOIN sugerencias_preguntas sp ON sp.pregunta_sugerida COLLATE utf8mb4_spanish_ci = p.pregunta
+    JOIN usuarios u ON u.id_usuario = sp.id_usuario
+    WHERE p.estado = 'sugerida'
+";
         return $this->db->query($sql);
-
     }
 
-    public function activarPreguntaSugerida($id){
+    public function getAutorDePreguntaSugerida($id_pregunta) {
+        $sql = "
+        SELECT u.nombre_usuario, u.email
+        FROM sugerencias_preguntas sp
+        JOIN usuarios u ON sp.id_usuario = u.id_usuario
+        JOIN preguntas p ON sp.pregunta_sugerida COLLATE utf8mb4_spanish_ci = p.pregunta
+        WHERE p.id_pregunta = $id_pregunta
+        LIMIT 1
+    ";
+        $resultado = $this->db->query($sql);
+        return $resultado[0] ?? null;
+    }
+
+    public function activarPreguntaSugerida($id)
+    {
 
         $estado = 'activa';
 
@@ -40,7 +57,8 @@ class EditorModel
 
     }
 
-    public function desactivarPreguntaSugerida($id){
+    public function desactivarPreguntaSugerida($id)
+    {
         $estado = 'deshabilitada';
 
         $sql = "UPDATE preguntas SET estado = '$estado' WHERE id_pregunta = $id ";
@@ -51,7 +69,8 @@ class EditorModel
 
     }
 
-    public function fechaResolucionSugerencia($id){
+    public function fechaResolucionSugerencia($id)
+    {
 
         $query = "SELECT pregunta FROM preguntas WHERE id_pregunta = $id ";
         $resultado = $this->db->query($query);
@@ -64,7 +83,8 @@ class EditorModel
     }
 
 
-    public function actualizarEstadoPregunta($id, $estado){
+    public function actualizarEstadoPregunta($id, $estado)
+    {
 
         $query = "SELECT pregunta FROM preguntas WHERE id_pregunta = $id ";
         $resultado = $this->db->query($query);
@@ -75,10 +95,6 @@ class EditorModel
         $this->db->execute($sql);
 
     }
-
-
-
-
 
 
     public function getPreguntasPorCategoria($id_categoria, $terminoBusqueda = ''): array
@@ -107,6 +123,7 @@ class EditorModel
               ";
         return $this->db->query($sql);
     }
+
     public function getPreguntas($terminoBusqueda = ''): array
     {
         $where = "1=1";
@@ -143,28 +160,29 @@ class EditorModel
         $this->db->execute($sql);
     }
 
-  /*  public function getPreguntaConRespuestas(int $id_pregunta)
-    {
-        $sql = "
-                SELECT *
-                FROM preguntas p join respuestas r on r.id_pregunta = p.id_pregunta
-                WHERE p.id_pregunta = $id_pregunta";
-        return $this->db->query($sql);
-    }*/
+    /*  public function getPreguntaConRespuestas(int $id_pregunta)
+      {
+          $sql = "
+                  SELECT *
+                  FROM preguntas p join respuestas r on r.id_pregunta = p.id_pregunta
+                  WHERE p.id_pregunta = $id_pregunta";
+          return $this->db->query($sql);
+      }*/
 
     public function getPreguntaPorId($id_pregunta)
     {
-        $sql = "SELECT p.id_pregunta, p.pregunta, estado
-                FROM preguntas p
-                WHERE id_pregunta = $id_pregunta";
+        $sql = "SELECT p.id_pregunta, p.pregunta, p.estado, c.nombre
+            FROM preguntas p
+            JOIN categoria c ON p.id_categoria = c.id_categoria
+            WHERE p.id_pregunta = $id_pregunta";
         return $this->db->query($sql);
     }
 
     public function getRespuestasPorPregunta($id_pregunta): array
     {
-        $sql = "SELECT * 
-                FROM respuestas 
-                WHERE id_pregunta = $id_pregunta";
+        $sql = "SELECT id_respuesta, respuesta, esCorrecta
+            FROM respuestas
+            WHERE id_pregunta = $id_pregunta";
         return $this->db->query($sql);
     }
 
@@ -175,6 +193,7 @@ class EditorModel
                 WHERE id_pregunta = $id_pregunta";
         $this->db->execute($sql);
     }
+
     public function actualizarRespuesta($id_respuesta, $textoRespuesta)
     {
         $sql = "UPDATE respuestas

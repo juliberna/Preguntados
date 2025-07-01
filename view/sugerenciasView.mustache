@@ -1,50 +1,46 @@
 {{> navbar}}
-<div class=" vh-100 text-dark" style="background-image: url('../public/images/fondo-1.png'); background-position: center center;background-size: cover;background-attachment: fixed;background-repeat: no-repeat;">
-<h1 class="text-center text-dark mb-4 mt-4 fw-bold">{{title}}</h1>
-<div class="container-fluid d-flex justify-content-center">
+<div class=" vh-100 text-dark"
+     style="background-image: url('../public/images/fondo-1.png'); background-position: center center;background-size: cover;background-attachment: fixed;background-repeat: no-repeat;">
+    <h1 class="text-center text-dark mb-4 mt-4 fw-bold">{{title}}</h1>
+    <div class="container-fluid d-flex justify-content-center">
+        {{#haySugeridas}}
+            <div class="table-responsive w-75">
+                <table class="table table-striped table-bordered table-hover text-center">
+                    <thead class="table-secondary">
+                    <tr>
+                        <th>Pregunta</th>
+                        <th>Categoria</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#sugeridas}}
+                        <tr class="align-middle">
+                            <td>{{pregunta}}</td>
+                            <td>{{nombre}}</td>
+                            <td>
+                                <strong>{{nombre_usuario}}</strong><br>
+                                <small>{{email}}</small>
+                            </td>
+                            <td><span class="badge bg-warning">{{estado}}</span></td>
+                            <td>
+                                <a class="btn btn-info btn-sm" href="/editor/verSugerencia?id_pregunta={{id_pregunta}}
+                                ">Ver Sugerencia</a>
+                            </td>
 
+                        </tr>
+                    {{/sugeridas}}
+                    </tbody>
+                </table>
+            </div>
+        {{/haySugeridas}}
 
-    {{#haySugeridas}}
-    <div class="table-responsive w-75">
-        <table class="table table-striped table-bordered table-hover text-center">
-            <thead class="table-secondary">
-            <tr>
-                <th>ID</th>
-                <th>Pregunta</th>
-                <th>Categoria</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#sugeridas}}
-                <tr class="align-middle">
-                    <td>{{id_pregunta}}</td>
-                    <td>{{pregunta}}</td>
-                    <td>{{nombre}}</td>
-                    <td> <span class="badge bg-warning" >{{estado}}</span>  </td>
-                    <td>
-                        <div class="d-flex justify-content-center align-items-center gap-2">
-                        <a class="btn btn-success btn-sm" href="/editor/activarPregunta?id={{id_pregunta}}">Activar</a>
-                        <a class="btn btn-danger btn-sm" href="/editor/desactivarPregunta?id={{id_pregunta}}">Descartar</a>
-                        </div>
-                    </td>
-
-                </tr>
-            {{/sugeridas}}
-            </tbody>
-        </table>
+        {{^haySugeridas}}
+            <div class="alert alert-dark text-center mt-3 fw-bold w-75">
+                No hay preguntas sugeridas por ahora, Estas al día!
+            </div>
+        {{/haySugeridas}}
     </div>
-    {{/haySugeridas}}
-
-    {{^haySugeridas}}
-        <div class="alert alert-dark text-center mt-3 fw-bold w-75">
-            No hay preguntas sugeridas por ahora, Estas al día!
-        </div>
-    {{/haySugeridas}}
-
-</div>
-
-
-
 </div>

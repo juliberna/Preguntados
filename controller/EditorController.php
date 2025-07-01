@@ -34,6 +34,36 @@ class EditorController
         ]);
     }
 
+    public function verSugerencia()
+    {
+        $id_pregunta = $_GET['id_pregunta'] ?? null;
+        $origen = $_GET['origen'] ?? 'sugerencias';
+
+        if (!$id_pregunta) {
+            header('Location: /editor/sugerencias');
+            exit;
+        }
+
+        $pregunta = $this->model->getPreguntaPorId($id_pregunta);
+        $respuestas = $this->model->getRespuestasPorPregunta($id_pregunta);
+        $autor = $this->model->getAutorDePreguntaSugerida($id_pregunta);
+
+        $pregunta = $pregunta[0] ?? null;
+
+        if (!$pregunta) {
+            header('Location: /editor/sugerencias');
+            exit;
+        }
+
+        $this->view->render("verSugerencia", [
+            'title' => 'Ver Pregunta Sugerida',
+            'pregunta' => $pregunta,
+            'respuestas' => $respuestas,
+            'autor' => $autor,
+            'volver_a_gestionar' => $origen === 'gestionar'
+        ]);
+    }
+
     public function activarPregunta(){
 
         $id= $_GET['id'];
