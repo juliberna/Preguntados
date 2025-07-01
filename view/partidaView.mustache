@@ -37,13 +37,15 @@
             <form method="POST" action="/partida/responder" id="formTiempoAgotado" style="display: none;">
                 <input type="hidden" name="id_respuesta" value="-1">
             </form>
-            <p class="mt-3">
-                ¿Hay algo mal en esta pregunta?
-                <button type="button" class="btn btn-link text-danger fw-bold p-0" data-bs-toggle="modal"
-                        data-bs-target="#modalReporte">
-                    REPORTAR PREGUNTA
-                </button>
-            </p>
+            {{^reportado}}
+                <p class="mt-3">
+                    ¿Hay algo mal en esta pregunta?
+                    <button type="button" class="btn btn-link text-danger fw-bold p-0" data-bs-toggle="modal"
+                            data-bs-target="#modalReporte">
+                        REPORTAR PREGUNTA
+                    </button>
+                </p>
+            {{/reportado}}
             {{#respondido}}
                 <p>su puntaje es {{puntaje}}</p>
             {{/respondido}}
@@ -58,7 +60,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="formReporte" method="POST" action="/reporte/crearReporte">
+                    <form id="formReporte" method="POST" action="/partida/reportarPregunta">
                         <input type="hidden" name="id_pregunta" value="{{id_pregunta}}">
                         <div class="mb-3">
                             <label for="motivoReporte" class="form-label">¿Por qué quieres reportar esta pregunta?
