@@ -41,7 +41,6 @@ if (isset($_SESSION['usuario_id'])) {
         header("Location: /login/show");
         exit();
     }
-
 }
 
 require_once "Configuration.php";

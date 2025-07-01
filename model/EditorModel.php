@@ -17,21 +17,32 @@ class EditorModel
         return $this->db->query($sql);
     }
 
-    public function getPreguntasSugeridas()
+    public function getPreguntasSugeridas($terminoBusqueda = '', $id_categoria = 'todasLasCategorias')
     {
+        $where = "p.estado = 'sugerida'";
 
-        $sql = "
-    SELECT p.*, c.nombre, u.nombre_usuario, u.email
-    FROM preguntas p
-    JOIN categoria c ON p.id_categoria = c.id_categoria
-    JOIN sugerencias_preguntas sp ON sp.pregunta_sugerida COLLATE utf8mb4_spanish_ci = p.pregunta
-    JOIN usuarios u ON u.id_usuario = sp.id_usuario
-    WHERE p.estado = 'sugerida'
-";
+        if ($terminoBusqueda !== '') {
+            $term = $this->db->escapeLike($terminoBusqueda);
+            $where .= " AND p.pregunta LIKE '%$term%'";
+        }
+
+        if ($id_categoria !== 'todasLasCategorias') {
+            $where .= " AND p.id_categoria = " . (int)$id_categoria;
+        }
+
+        $sql = "SELECT p.id_pregunta, p.pregunta, c.nombre, u.nombre_usuario, u.email, p.estado 
+        FROM preguntas p 
+        JOIN categoria c ON p.id_categoria = c.id_categoria
+        JOIN sugerencias_preguntas s ON s.pregunta_sugerida = p.pregunta COLLATE utf8mb4_spanish_ci = p.pregunta
+        JOIN usuarios u ON s.id_usuario = u.id_usuario
+        WHERE $where
+        GROUP BY p.id_pregunta";
+
         return $this->db->query($sql);
     }
 
-    public function getAutorDePreguntaSugerida($id_pregunta) {
+    public function getAutorDePreguntaSugerida($id_pregunta)
+    {
         $sql = "
         SELECT u.nombre_usuario, u.email
         FROM sugerencias_preguntas sp

@@ -1,7 +1,33 @@
 {{> navbar}}
-<div class=" vh-100 text-dark"
-     style="background-image: url('../public/images/fondo-1.png'); background-position: center center;background-size: cover;background-attachment: fixed;background-repeat: no-repeat;">
+<div class="container-fluid vh-100" style="background-image: url('../public/images/fondo-1.png'); background-position: center center;background-size: cover;background-attachment: fixed;background-repeat: no-repeat;">
     <h1 class="text-center text-dark mb-4 mt-4 fw-bold">{{title}}</h1>
+    <form method="GET" action="/editor/sugerencias" class="row mb-4 justify-content-center">
+        <div class="col-md-4 mb-2 mb-md-0">
+            <input type="search"
+                   name="terminoBusqueda"
+                   placeholder="Buscar por texto de la pregunta..."
+                   value="{{terminoBusqueda}}"
+                   class="form-control"
+                   style="background-color: rgba(255, 255, 255, 0.8); border: 1px solid #a76ac6; color: #4c1765;">
+        </div>
+        <div class="col-md-4 mb-2 mb-md-0">
+            <select name="categoria" class="form-select"
+                    onchange="this.form.submit()">
+                <option value="todasLasCategorias" {{#categoria_todas}}selected{{/categoria_todas}}>Todas las
+                    categorías
+                </option>
+                {{#categorias}}
+                    <option value="{{id_categoria}}" {{#seleccionada}}selected{{/seleccionada}}>{{nombre}}</option>
+                {{/categorias}}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn fw-bold w-100" style="background-color: #a76ac6; color: white;">Buscar
+            </button>
+        </div>
+    </form>
+
     <div class="container-fluid d-flex justify-content-center">
         {{#haySugeridas}}
             <div class="table-responsive w-75">

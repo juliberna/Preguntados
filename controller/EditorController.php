@@ -22,15 +22,24 @@ class EditorController
 
 
     public function sugerencias(){
+        $terminoBusqueda = $_GET['terminoBusqueda'] ?? '';
+        $id_categoria = $_GET['categoria'] ?? 'todasLasCategorias';
 
-        $preguntasSugeridas = $this->model->getPreguntasSugeridas();
+        $categorias = $this->model->getCategorias();
+        foreach ($categorias as &$categoria) {
+            $categoria['seleccionada'] = ($categoria['id_categoria'] == $id_categoria);
+        }
 
+        $preguntasSugeridas = $this->model->getPreguntasSugeridas($terminoBusqueda, $id_categoria);
         $haySugeridas = !empty($preguntasSugeridas);
 
         $this->view->render("sugerencias", [
             'title' => 'Sugerencias de usuarios',
             'sugeridas' => $preguntasSugeridas,
-            'haySugeridas' => $haySugeridas
+            'haySugeridas' => $haySugeridas,
+            'terminoBusqueda' => $terminoBusqueda,
+            'categorias' => $categorias,
+            'categoria_todas' => $id_categoria === 'todasLasCategorias'
         ]);
     }
 
