@@ -15,6 +15,16 @@ class LoginController
 
     public function show()
     {
+        // Usuario ya logueado, redirigimos según su rol a la página principal
+        if (isset($_SESSION['usuario_id'])) {
+            $roles = $_SESSION['roles'] ?? [];
+            if (in_array('editor', $roles, true)) {
+                $this->redirectTo("/editor/show");
+            } else {
+                $this->redirectTo("/lobby/show");
+            }
+        }
+
         $error = $_SESSION['login_error'] ?? null;
 
         if (isset($_GET['error']) && $_GET['error'] === 'trampa') {
