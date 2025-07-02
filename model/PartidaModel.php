@@ -137,7 +137,7 @@ class PartidaModel
             return;
         }
 
-        $id_resp = intval($id_respuesta);
+        $id_resp = is_null($id_respuesta) ? "NULL" : intval($id_respuesta);
         $acerto = intval($acerto);
 
 

@@ -16,6 +16,11 @@ class LoginController
     public function show()
     {
         $error = $_SESSION['login_error'] ?? null;
+
+        if (isset($_GET['error']) && $_GET['error'] === 'trampa') {
+            $error = "Has sido desconectado por intento de trampa.";
+        }
+
         unset($_SESSION['login_error']);
 
         $this->view->render("login", [

@@ -107,24 +107,29 @@ class PartidaController
 
     public function responder()
     {
+        $this->detectarTrampaYExpulsar();
+
         $id_usuario = $_SESSION['usuario_id'] ?? null;
+        $id_pregunta = $_SESSION['id_pregunta'];
+        $id_partida = $_SESSION['id_partida'];
 
         $inicio = $_SESSION['inicio_pregunta'] ?? null;
-        if ($inicio === null || (time() - $inicio) > 10) {
+        $tiempo_agotado = $inicio !== null && (time() - $inicio) > 10;
+
+        $respuestaCorrecta = false;
+        $texto = $tiempo_agotado ? '¡TIEMPO AGOTADO!' : '¡INCORRECTA!';
+        $color = $tiempo_agotado ? 'text-warning' : 'text-danger';
+        $reportado = false;
+        $id_respuesta = $_POST['id_respuesta'] ?? null;
+
+        // Se acabó el tiempo o no respondió
+        if ($tiempo_agotado || $id_respuesta === -1) {
             $this->model->actualizarFechaPartidaFinalizada($_SESSION['id_partida']);
-            unset($_SESSION['inicio_pregunta']);
-            header("Location: /perdio/show");
-            exit;
+            $this->model->crearRegistroPreguntaRespondida($id_partida, $id_pregunta, null, 0);
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_respuesta'])) {
-            $id_pregunta = $_SESSION['id_pregunta'];
-            $id_partida = $_SESSION['id_partida'];
             $respuestas = $this->model->getRespuestasPorPregunta($id_pregunta);
-
-            $respuestaCorrecta = false;
-            $texto = "¡INCORRECTA!";
-            $color = 'text-danger';
 
             foreach ($respuestas as $respuesta) {
                 if ($respuesta['esCorrecta']) {
@@ -139,6 +144,7 @@ class PartidaController
                         $this->model->acumularPuntajeUsuario($id_usuario);
                         $this->model->incrementarCorrectasPregunta($id_pregunta);
                         $this->model->incrementarCorrectasUsuario($id_usuario);
+                        break;
                     }
                 }
             }
@@ -147,31 +153,36 @@ class PartidaController
                 $this->model->actualizarFechaPartidaFinalizada($id_partida);
                 $this->model->crearRegistroPreguntaRespondida($id_partida, $id_pregunta, $_POST['id_respuesta'], 0);
             }
-
-            $_SESSION['cantidad'] = intval($this->model->getCantidadDePreguntas($id_partida));
-            $this->mostrarVistaRespuesta($id_usuario, $id_pregunta, $respuestaCorrecta, $texto, $color, false);
         } else {
             echo 'error';
         }
+
+        $_SESSION['cantidad'] = intval($this->model->getCantidadDePreguntas($id_partida));
+        $this->mostrarVistaRespuesta($id_usuario, $id_pregunta, $respuestaCorrecta, $texto, $color, false);
     }
 
-    public function reportarPregunta() {
+    public function reportarPregunta()
+    {
         $idPregunta = (int)$_POST['id_pregunta'];
         $idUsuario = $_SESSION['usuario_id'] ?? null;
         $idPartida = $_SESSION['id_partida'] ?? null;
-
-        $motivo = trim($_POST['motivo'] ?? '') ? : 'Sin motivo especificado';
+        $motivo = trim($_POST['motivo'] ?? '') ?: 'Sin motivo especificado';
 
         $this->preguntaModel->insertarReportePregunta($idPregunta, $idUsuario, $motivo);
         $this->preguntaModel->actualizarEstadoPregunta($idPregunta, 'reportada');
 
-        // Simular como si la hubiera respondido mal
-        $this->model->actualizarFechaPartidaFinalizada($idPartida);
+        // Finalizar la partida si aun esta activa
+        if ($idPartida !== null) {
+            $this->model->actualizarFechaPartidaFinalizada($idPartida);
+        }
 
-        $_SESSION['cantidad'] = intval($this->model->getCantidadDePreguntas($idPartida));
-
-        // Mostrar la vista como incorrecta, con un mensaje personalizado
-        $this->mostrarVistaRespuesta($idUsuario, $idPregunta, false, "Has reportado la pregunta. Se marcó como incorrecta.", "text-warning",true);
+        // Mostrar vista de confirmación
+        $this->view->render("reporteCreado", [
+            'title' => 'Reporte enviado',
+            'mensaje' => 'Gracias por reportar la pregunta. Será revisada por un editor.',
+            'puntaje' => $_SESSION['puntaje'] ?? 0,
+            'cantidad' => $_SESSION['cantidad'] ?? 0
+        ]);
     }
 
     private function mostrarVistaRespuesta($id_usuario, $id_pregunta, $respuestaCorrecta, $texto, $color, $reportado)
@@ -212,7 +223,8 @@ class PartidaController
             'foto' => $foto,
             'fondo' => $fondo,
             'user' => $user,
-            'reportado' => $reportado
+            'reportado' => $reportado,
+            'id_pregunta' => $id_pregunta
         ]);
 
         $this->limpiarSesionPregunta();
@@ -226,5 +238,16 @@ class PartidaController
             $_SESSION['pregunta'],
             $_SESSION['inicio_pregunta']
         );
+    }
+
+    private function detectarTrampaYExpulsar() {
+        if (!isset($_SESSION['id_pregunta'])) {
+            if (!empty($_SESSION['id_partida'])) {
+                $this->model->actualizarFechaPartidaFinalizada($_SESSION['id_partida']);
+            }
+            session_destroy();
+            header("Location: /login/show?error=trampa");
+            exit;
+        }
     }
 }
