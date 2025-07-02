@@ -16,6 +16,8 @@ $rutasPublicas = [
     'perfil/show',
     'ranking/show',
     'login/logout',
+    'registro/checkUsuario',
+    'registro/checkEmail',
     '/'
 ];
 

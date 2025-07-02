@@ -62,4 +62,22 @@ class RegistroModel
       $this->database->execute("INSERT INTO usuario_rol (id_usuario, id_rol) VALUES ($id_usuario, $id_rol)");
     }
   }
+
+    public function existeEmail($email)
+    {
+        $stmt = $this->database->prepare("SELECT id_usuario FROM usuarios WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+    }
+
+    public function existeUsuario($usuario)
+    {
+        $stmt = $this->database->prepare("SELECT id_usuario FROM usuarios WHERE nombre_usuario = ?");
+        $stmt->bind_param("s", $usuario);
+        $stmt->execute();
+        $stmt->store_result();
+        return $stmt->num_rows > 0;
+    }
 }
