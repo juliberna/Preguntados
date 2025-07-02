@@ -217,4 +217,32 @@ class RegistroController
             'message' => $message
         ]);
     }
+
+    public function checkEmail()
+    {
+        $email = $_POST['email'] ?? '';
+
+        if (empty($email)) {
+            echo json_encode(['exists' => false]);
+            return;
+        }
+
+        $exists = $this->model->existeEmail($email);
+        header('Content-Type: application/json');
+        echo json_encode(['exists' => $exists]);
+    }
+
+    public function checkUsuario()
+    {
+        $usuario = $_POST['usuario'] ?? '';
+
+        if (empty($usuario)) {
+            echo json_encode(['exists' => false]);
+            return;
+        }
+
+        $exists = $this->model->existeUsuario($usuario);
+        header('Content-Type: application/json');
+        echo json_encode(['exists' => $exists]);
+    }
 }
