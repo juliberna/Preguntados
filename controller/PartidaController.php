@@ -17,11 +17,16 @@ class PartidaController
     public function crearPartida()
     {
         $id_usuario = $_SESSION['usuario_id'] ?? null;
+
+        // Si ya hay una partida en curso, no crear otra
+        if (isset($_SESSION['id_partida'])) {
+            header('Location: /ruleta/show');
+            exit();
+        }
+
+        // Si no hay partida, crearla
         $_SESSION['puntaje'] = 0;
-
-        //crear partida
         $id_partida = $this->model->crearPartida($id_usuario);
-
         $_SESSION['id_partida'] = $id_partida;
 
         header('Location: /ruleta/show');
@@ -122,8 +127,8 @@ class PartidaController
 
         // Se acabó el tiempo o no respondió
         if ($tiempo_agotado || $id_respuesta === -1) {
-            $this->model->actualizarFechaPartidaFinalizada($_SESSION['id_partida']);
             $this->model->crearRegistroPreguntaRespondida($id_partida, $id_pregunta, null, 0);
+            $this->finalizarPartida();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_respuesta'])) {
@@ -148,8 +153,8 @@ class PartidaController
             }
 
             if (!$respuestaCorrecta) {
-                $this->model->actualizarFechaPartidaFinalizada($id_partida);
                 $this->model->crearRegistroPreguntaRespondida($id_partida, $id_pregunta, $_POST['id_respuesta'], 0);
+                $this->finalizarPartida();
             }
         } else {
             echo 'error';
@@ -171,7 +176,7 @@ class PartidaController
 
         // Finalizar la partida si aun esta activa
         if ($idPartida !== null) {
-            $this->model->actualizarFechaPartidaFinalizada($idPartida);
+            $this->finalizarPartida();
         }
 
         $this->view->render("reporteCreado", [
@@ -238,7 +243,8 @@ class PartidaController
         );
     }
 
-    private function detectarTrampaYExpulsar() {
+    private function detectarTrampaYExpulsar()
+    {
         if (!isset($_SESSION['id_pregunta'])) {
             if (!empty($_SESSION['id_partida'])) {
                 $this->model->actualizarFechaPartidaFinalizada($_SESSION['id_partida']);
@@ -246,6 +252,14 @@ class PartidaController
             session_destroy();
             header("Location: /login/show?error=trampa");
             exit;
+        }
+    }
+
+    private function finalizarPartida()
+    {
+        if (isset($_SESSION['id_partida'])) {
+            $this->model->actualizarFechaPartidaFinalizada($_SESSION['id_partida']);
+            unset($_SESSION['id_partida']);
         }
     }
 }
