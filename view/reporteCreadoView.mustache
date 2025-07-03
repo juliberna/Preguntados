@@ -1,0 +1,15 @@
+{{> navbar}}
+<main class="main-height bg-fondo d-flex justify-content-center align-items-center p-2">
+    <div class="container-fluid d-flex flex-column justify-content-center align-items-center">
+        <div style="background-color: rgba(171,152,169,0.53)"
+             class="container text-warning p-5 rounded-3 d-flex flex-column text-dark text-center align-items-center justify-content-center">
+            <h1 class="fw-bold" style="color: darkorange;">¡Gracias por tu reporte!</h1>
+            <p class="fw-bold" style="color: darkorange;">{{mensaje}}</p>
+            <p class="fw-bold">Tu puntaje fue: {{puntaje}}</p>
+            <p class="fw-bold">Preguntas respondidas correctamente: {{cantidad}}</p>
+        </div>
+        <div class="m-3">
+            <a style="background-color: #732F69" class="btn text-white" href="/lobby/show">Volver al lobby</a>
+        </div>
+    </div>
+</main>

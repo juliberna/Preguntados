@@ -1,16 +1,10 @@
 <nav class="navbar navbar-expand-lg navbar-container py-2" style="background-color: {{fondo}};">
     <div class="container-fluid justify-content-between align-items-center">
-
         <img src="{{foto}}" alt="Ícono categoría"
              style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
-
-        <h1 class="m-0 flex-grow-1 text-center fw-bold" style="font-family: 'Baloo', cursive; font-size: 1.5rem;">
-            {{categoria}}
-        </h1>
-
-        <p class="m-0 fw-bold" style="font-size: 0.9rem;">
-            {{user}}
-        </p>
+        <h1 class="m-0 flex-grow-1 text-center fw-bold"
+            style="font-family: 'Baloo', cursive; font-size: 1.5rem;">{{categoria}}</h1>
+        <p class="m-0 fw-bold" style="font-size: 0.9rem;">{{user}}</p>
     </div>
 </nav>
 
@@ -19,35 +13,46 @@
         <h5 id="contador_texto" class="mb-3 fw-bold" style="{{ocultar}}">Tiempo: <span
                 id="contador">{{tiempo_restante}}</span> segundos</h5>
         <p class="p-0 m-0 text-center fw-bold fs-3 {{color}}">{{texto}}</p>
-        <div class="container d-flex flex-column justify-content-center align-items-center">
 
+        <div class="container d-flex flex-column justify-content-center align-items-center">
             <p class="bg-light w-75 m-2 p-5 text-dark text-center rounded-3 fw-bold">{{pregunta}}</p>
 
             {{#respuestas}}
                 <div class="container d-flex w-100 justify-content-center align-items-center m-0 p-0">
-
                     <form method="POST" action="/partida/responder" class="m-0 p-0 w-75">
                         <input type="hidden" name="id_respuesta" value={{id}}>
                         <button type="submit" name="respuesta" class="btn btn-light respuesta w-100 m-1 {{clase}}"
                                 {{#disabled}}disabled{{/disabled}}>{{texto_respuesta}}</button>
                     </form>
-
                 </div>
             {{/respuestas}}
-            <form method="POST" action="/partida/responder" id="formTiempoAgotado" style="display: none;">
-                <input type="hidden" name="id_respuesta" value="-1">
-            </form>
+
+            {{^respondido}}
+                <form method="POST" action="/partida/responder" id="formTiempoAgotado" style="display: none;">
+                    <input type="hidden" name="id_respuesta" value="-1">
+                </form>
+            {{/respondido}}
+
             {{^reportado}}
-                <p class="mt-3">
-                    ¿Hay algo mal en esta pregunta?
-                    <button type="button" class="btn btn-link text-danger fw-bold p-0" data-bs-toggle="modal"
-                            data-bs-target="#modalReporte">
-                        REPORTAR PREGUNTA
-                    </button>
-                </p>
+                {{#respondido}}
+                    <p class="mt-3">
+                        ¿Hay algo mal en esta pregunta?
+                        <button type="button" class="btn btn-link text-danger fw-bold p-0" data-bs-toggle="modal"
+                                data-bs-target="#modalReporte">
+                            REPORTAR PREGUNTA
+                        </button>
+                    </p>
+                {{/respondido}}
             {{/reportado}}
+
             {{#respondido}}
-                <p>su puntaje es {{puntaje}}</p>
+                <p>Tu puntaje actual es <strong>{{puntaje}}</strong></p>
+                {{#correcto}}
+                    <a href="/ruleta/show" class="btn btn-success">Seguir Jugando</a>
+                {{/correcto}}
+                {{^correcto}}
+                    <a href="/perdio/show" class="btn btn-danger">Finalizar Partida</a>
+                {{/correcto}}
             {{/respondido}}
         </div>
     </div>
@@ -81,17 +86,12 @@
     </div>
 </main>
 
-
 <script>
-    let tiempoMaximo = 10; // duración máxima en segundos
-
-    // Intentamos leer el tiempo restante guardado en sessionStorage
+    let tiempoMaximo = 10;
     let tiempo = sessionStorage.getItem('tiempoRestante');
     if (tiempo === null) {
-        tiempo = {{tiempo_restante}}; // toma el valor que envía el backend (ejemplo 10)
-        if (typeof tiempo === 'undefined' || tiempo === null) {
-            tiempo = tiempoMaximo;
-        }
+        tiempo = {{tiempo_restante}};
+        if (typeof tiempo === 'undefined' || tiempo === null) tiempo = tiempoMaximo;
     } else {
         tiempo = parseInt(tiempo);
     }
@@ -100,50 +100,25 @@
     const contador_texto = document.getElementById("contador_texto");
     contador.textContent = tiempo;
 
-
     const timer = setInterval(() => {
         contador.textContent = tiempo;
         if (tiempo <= 0) {
             clearInterval(timer);
-            sessionStorage.removeItem('tiempoRestante'); // limpio storage
+            sessionStorage.removeItem('tiempoRestante');
             contador_texto.innerHTML = '';
             contador_texto.textContent = 'TIEMPO AGOTADO';
             contador_texto.style.color = 'red';
             document.getElementById("formTiempoAgotado").submit();
-            setTimeout(function () {
-                window.location.href = "/perdio/show";  // redirijo cuando se acaba
-            }, 1000);
-
         } else {
             tiempo--;
-            sessionStorage.setItem('tiempoRestante', tiempo); // guardo el tiempo restante
+            sessionStorage.setItem('tiempoRestante', tiempo);
         }
     }, 1000);
 
     document.querySelectorAll("button.respuesta").forEach(btn => {
         btn.addEventListener("click", () => {
             clearInterval(timer);
-            sessionStorage.removeItem('tiempoRestante'); // limpio storage cuando responden
+            sessionStorage.removeItem('tiempoRestante');
         });
     });
-
 </script>
-
-
-{{#respondido}}
-    {{#correcto}}
-        <script>
-            setTimeout(function () {
-                window.location.href = "/ruleta/show";
-            }, 3000);
-        </script>
-    {{/correcto}}
-
-    {{^correcto}}
-        <script>
-            setTimeout(function () {
-                window.location.href = "/perdio/show";
-            }, 3000);
-        </script>
-    {{/correcto}}
-{{/respondido}}
