@@ -218,7 +218,7 @@ class PartidaModel
             return $this->obtenerPregunta($id_usuario, $id_categoria);
         }
 
-        // d) agrupo y selecciono según nivel
+        // agrupo y selecciono según nivel
         $grupos = $this->agruparPorNivel($preguntas);
 
         $preg = $this->elegirPorNivelUsuario($grupos, $nivelUsuario);

@@ -2,16 +2,19 @@
 
 <main class="main-height bg-fondo d-flex justify-content-center align-items-center p-2">
     <div class="container mt-3 text-center">
-        <p>Vas a obtener una categoría aleatoria</p>
+        <p class="fs-5 text-light">Vas a obtener una categoría aleatoria</p>
 
-        <div id="ruleta-container" class="my-4 overflow-hidden border rounded"
-             style="width: 600px; height: 120px; margin: 0 auto; background: #222; position: relative;">
-            <div id="ruleta" class="d-flex" style="transition: transform 3s ease-out;">
+        <div id="ruleta-container" class="my-4 overflow-hidden border border-light rounded-4 shadow"
+             style="width: 600px; height: 140px; margin: 0 auto; background-color: #1c1c1c; position: relative;">
+            <div id="ruleta" class="d-flex align-items-center" style="transition: transform 3s ease-out;">
                 {{#categorias}}
-                    <div class="px-4 d-flex flex-column align-items-center justify-content-center"
+                    <div class="px-3 py-2 d-flex flex-column align-items-center justify-content-center text-white border-end border-secondary"
                          style="min-width: 150px;">
-                        <img src="{{foto_categoria}}" style="width: 60px; height: 60px;" alt="{{nombre}}">
-                        <span>{{nombre}}</span>
+                        <div class="bg-dark rounded-circle d-flex align-items-center justify-content-center mb-1"
+                             style="width: 60px; height: 60px;">
+                            <img src="{{foto_categoria}}" style="width: 50px; height: 50px;" alt="{{nombre}}" class="rounded-circle">
+                        </div>
+                        <span class="small">{{nombre}}</span>
                     </div>
                 {{/categorias}}
             </div>
@@ -22,18 +25,12 @@
         </form>
 
         {{^yaGiro}}
-            <button id="boton-girar" class="btn btn-dark mt-3">Girar</button>
+            <button id="boton-girar" class="btn btn-outline-light mt-3">Girar</button>
         {{/yaGiro}}
 
         {{#yaGiro}}
             <p class="mt-3 text-success">Ya obtuviste una categoría. Podés ver la pregunta.</p>
-            <script>
-                window.addEventListener("DOMContentLoaded", () => {
-                    document.getElementById("form-ver-pregunta").style.display = "block";
-                });
-            </script>
         {{/yaGiro}}
-
     </div>
 </main>
 
@@ -41,6 +38,15 @@
     const ruleta = document.getElementById('ruleta');
     const formVerPregunta = document.getElementById('form-ver-pregunta');
     const botonGirar = document.getElementById('boton-girar');
+
+    const posicionGanadora = {{#posicionGanadora}}{{posicionGanadora}}{{/posicionGanadora}}{{^posicionGanadora}}null{{/posicionGanadora}};
+
+    if (posicionGanadora !== null) {
+        const desplazamiento = posicionGanadora * 150 - 225;
+        ruleta.style.transition = "none";
+        ruleta.style.transform = `translateX(-${desplazamiento}px)`;
+        formVerPregunta.style.display = 'block';
+    }
 
     if (botonGirar) {
         botonGirar.addEventListener('click', async () => {

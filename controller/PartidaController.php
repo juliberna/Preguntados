@@ -174,7 +174,6 @@ class PartidaController
             $this->model->actualizarFechaPartidaFinalizada($idPartida);
         }
 
-        // Mostrar vista de confirmación
         $this->view->render("reporteCreado", [
             'title' => 'Reporte enviado',
             'mensaje' => 'Gracias por reportar la pregunta. Será revisada por un editor.',

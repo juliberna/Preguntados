@@ -14,47 +14,53 @@ class RuletaController
     public function show(){
 
         $categorias = $this->model->getCategorias();
-
-        $repeticiones = 5;
-        $categoriasRepetidas = [];
-        for ($i = 0; $i < $repeticiones; $i++) {
-            $categoriasRepetidas = array_merge($categoriasRepetidas, $categorias);
-        }
+        $categoriasRepetidas = $this->repetirCategorias($categorias, 5);
 
         $yaGiro = isset($_SESSION['categoria']);
+        $posicionGanadora = null;
+
+        if ($yaGiro) {
+            $posicionGanadora = $this->calcularPosicionGanadora($_SESSION['categoria'], $categorias);
+        }
 
         $this->view->render("ruleta", [
             'title' => 'Ruleta',
             'categorias' => $categoriasRepetidas,
-            'yaGiro' => $yaGiro
+            'yaGiro' => $yaGiro,
+            'posicionGanadora' => $posicionGanadora
         ]);
     }
 
     public function girar()
     {
-        header('Content-Type: application/json');
-
-        if (isset($_SESSION['categoria'])) {
-            echo json_encode(['error' => 'Ya giraste la ruleta.'], JSON_THROW_ON_ERROR);
-            return;
-        }
-
         $categoria = $this->model->getCategoriaAleatoria();
         $_SESSION["categoria"] = $categoria;
-
         $categorias = $this->model->getCategorias();
-        $repeticiones = 5;
-        $totalCategorias = count($categorias);
 
+        $posicionGanadora = $this->calcularPosicionGanadora($categoria, $categorias);
+
+        echo json_encode(['posicion' => $posicionGanadora], JSON_THROW_ON_ERROR);
+    }
+
+    private function repetirCategorias($categorias, $veces): array
+    {
+        $resultado = [];
+        for ($i = 0; $i < $veces; $i++) {
+            $resultado = array_merge($resultado, $categorias);
+        }
+        return $resultado;
+    }
+
+    private function calcularPosicionGanadora($categoria,$categorias) : int
+    {
         $indiceOriginal = array_search(
             $categoria["id_categoria"],
             array_column($categorias, "id_categoria"),
             true
         );
 
-        $vuelta = rand(2, $repeticiones - 2);
-        $posicionGanadoraExtendida = $indiceOriginal + $vuelta * $totalCategorias;
+        $vuelta = rand(2, 5 - 2);
 
-        echo json_encode(['posicion' => $posicionGanadoraExtendida], JSON_THROW_ON_ERROR);
+        return $indiceOriginal + $vuelta * count($categorias);
     }
 }
