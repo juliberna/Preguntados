@@ -1,8 +1,72 @@
 {{> navbar}}
-<main class="main-height bg-fondo d-flex justify-content-center align-items-center p-2">
-    <div class="d-flex flex-column justify-content-center align-items-center rounded-3 m-5">
 
-        <img src="../public/images/ruleta.png" alt="ruleta" class="w-25">
-        <a href="/partida/jugar" class="btn btn-dark">Girar</a>
+<main class="main-height bg-fondo d-flex justify-content-center align-items-center p-2">
+    <div class="container mt-3 text-center">
+        <p>Vas a obtener una categoría aleatoria</p>
+
+        <div id="ruleta-container" class="my-4 overflow-hidden border rounded"
+             style="width: 600px; height: 120px; margin: 0 auto; background: #222; position: relative;">
+            <div id="ruleta" class="d-flex" style="transition: transform 3s ease-out;">
+                {{#categorias}}
+                    <div class="px-4 d-flex flex-column align-items-center justify-content-center"
+                         style="min-width: 150px;">
+                        <img src="{{foto_categoria}}" style="width: 60px; height: 60px;" alt="{{nombre}}">
+                        <span>{{nombre}}</span>
+                    </div>
+                {{/categorias}}
+            </div>
+        </div>
+
+        <form action="/partida/jugar" method="get" id="form-ver-pregunta" style="display: none;">
+            <button type="submit" class="btn btn-success mt-3">Ver Pregunta</button>
+        </form>
+
+        {{^yaGiro}}
+            <button id="boton-girar" class="btn btn-dark mt-3">Girar</button>
+        {{/yaGiro}}
+
+        {{#yaGiro}}
+            <p class="mt-3 text-success">Ya obtuviste una categoría. Podés ver la pregunta.</p>
+            <script>
+                window.addEventListener("DOMContentLoaded", () => {
+                    document.getElementById("form-ver-pregunta").style.display = "block";
+                });
+            </script>
+        {{/yaGiro}}
+
     </div>
 </main>
+
+<script>
+    const ruleta = document.getElementById('ruleta');
+    const formVerPregunta = document.getElementById('form-ver-pregunta');
+    const botonGirar = document.getElementById('boton-girar');
+
+    if (botonGirar) {
+        botonGirar.addEventListener('click', async () => {
+            botonGirar.disabled = true;
+
+            try {
+                const response = await fetch('/ruleta/girar');
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                const desplazamiento = data.posicion * 150 - 225;
+                ruleta.style.transition = "transform 3s ease-out";
+                ruleta.style.transform = `translateX(-${desplazamiento}px)`;
+
+                setTimeout(() => {
+                    formVerPregunta.style.display = 'block';
+                }, 3000);
+
+            } catch (error) {
+                console.error("Error al girar ruleta:", error);
+                alert("Hubo un error al girar la ruleta.");
+            }
+        });
+    }
+</script>

@@ -30,13 +30,14 @@ class EditorModel
             $where .= " AND p.id_categoria = " . (int)$id_categoria;
         }
 
-        $sql = "SELECT p.id_pregunta, p.pregunta, c.nombre, u.nombre_usuario, u.email, p.estado 
-        FROM preguntas p 
+        $sql = "
+        SELECT DISTINCT p.id_pregunta, p.pregunta, c.nombre, u.nombre_usuario, u.email, p.estado
+        FROM preguntas p
         JOIN categoria c ON p.id_categoria = c.id_categoria
-        JOIN sugerencias_preguntas s ON s.pregunta_sugerida = p.pregunta COLLATE utf8mb4_spanish_ci = p.pregunta
+        JOIN sugerencias_preguntas s ON s.pregunta_sugerida COLLATE utf8mb4_spanish_ci = p.pregunta COLLATE utf8mb4_spanish_ci
         JOIN usuarios u ON s.id_usuario = u.id_usuario
         WHERE $where
-        GROUP BY p.id_pregunta";
+    ";
 
         return $this->db->query($sql);
     }

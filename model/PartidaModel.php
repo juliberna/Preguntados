@@ -167,13 +167,6 @@ class PartidaModel
 
     }
 
-    public function getCategoriaAleatoria()
-    {
-        $sql = "SELECT * FROM categoria ORDER BY RAND() LIMIT 1";
-        $resultado = $this->db->query($sql);
-        return $resultado[0] ?? null;
-    }
-
     public function marcarPreguntaComoVista($id_usuario, $id_pregunta)
     {
         $stmt = $this->db->prepare("INSERT INTO usuario_pregunta (idUsuario, idPregunta, fechaVisto) VALUES (?, ?, NOW())");

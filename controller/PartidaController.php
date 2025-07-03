@@ -46,7 +46,7 @@ class PartidaController
 
             $tiempo_restante = $this->model->getTiempo();
             $this->view->render("partida", [
-                'title' => 'Ruleta',
+                'title' => 'Partida',
                 'usuario_id' => $id_usuario,
                 'pregunta' => $pregunta_texto,
                 'categoria' => $nombre_categoria,
@@ -60,8 +60,7 @@ class PartidaController
             return;
         }
 
-        $categoria = $this->model->getCategoriaAleatoria();
-
+        $categoria = $_SESSION['categoria'];
         $nombre_categoria = $categoria["nombre"];
 
         $pregunta = $this->model->obtenerPregunta($id_usuario, $categoria["id_categoria"]);
@@ -119,7 +118,6 @@ class PartidaController
         $respuestaCorrecta = false;
         $texto = $tiempo_agotado ? '¡TIEMPO AGOTADO!' : '¡INCORRECTA!';
         $color = $tiempo_agotado ? 'text-warning' : 'text-danger';
-        $reportado = false;
         $id_respuesta = $_POST['id_respuesta'] ?? null;
 
         // Se acabó el tiempo o no respondió
@@ -233,6 +231,7 @@ class PartidaController
     private function limpiarSesionPregunta()
     {
         unset(
+            $_SESSION['categoria'],
             $_SESSION['nombre_categoria'],
             $_SESSION['id_pregunta'],
             $_SESSION['pregunta'],
