@@ -19,7 +19,6 @@ require_once("controller/RuletaController.php");
 require_once("controller/InicioController.php");
 require_once("controller/PartidaController.php");
 require_once("controller/PerdioController.php");
-require_once("controller/ReporteController.php");
 require_once("controller/AdminController.php");
 
 require_once("model/GroupModel.php");

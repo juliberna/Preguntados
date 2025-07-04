@@ -86,6 +86,25 @@
     </div>
 </main>
 
+<audio id="sonidoWin" src="/public/sounds/win.mp3" preload="auto"></audio>
+<audio id="sonidoLose" src="/public/sounds/gameOver.mp3" preload="auto"></audio>
+
+{{#respondido}}
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const win = document.getElementById("sonidoWin");
+            const lose = document.getElementById("sonidoLose");
+
+            {{#correcto}}
+                win.play();
+            {{/correcto}}
+            {{^correcto}}
+                lose.play();
+            {{/correcto}}
+        });
+    </script>
+{{/respondido}}
+
 <script>
     let tiempoMaximo = 10;
     let tiempo = sessionStorage.getItem('tiempoRestante');
