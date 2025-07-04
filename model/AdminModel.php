@@ -10,10 +10,10 @@ class AdminModel{
 
     public function obtenerDistribucionPorGenero($desde, $hasta)
     {
-        $sql = "SELECT u.id_sexo, COUNT(*)
+        $sql = "SELECT s.descripcion, COUNT(*) AS cantidad
                 FROM usuarios u JOIN sexo s ON u.id_sexo = s.id_sexo
                 WHERE u.fecha_registro BETWEEN '$desde' AND '$hasta'
-                GROUP BY u.id_sexo";
+                GROUP BY s.descripcion";
         return $this->database->query($sql);
     }
 
@@ -26,7 +26,7 @@ class AdminModel{
                         ELSE 'Mayor'
                     END AS rangoEdad,  
                     COUNT(*) AS cantidad
-                    FROM usuarios
+                    FROM usuarios u
                     WHERE u.fecha_registro BETWEEN '$desde' AND '$hasta'
                     GROUP BY rangoEdad";
         return $this->database->query($sql);
@@ -41,7 +41,15 @@ class AdminModel{
         return $this->database->query($sql);
     }
 
-    public function obtenerTotalUsuariosPorFecha($desde, $hasta)
+    public function obtenerTotalUsuarios()
+    {
+        $sql = "SELECT COUNT(*) AS cantidad
+                FROM usuarios u JOIN usuario_rol ur ON ur.id_usuario = u.id_usuario
+                WHERE ur.id_rol = 1";
+        return $this->database->query($sql)[0]['cantidad'];
+    }
+
+    public function obtenerTotalUsuariosNuevosPorFecha($desde, $hasta)
     {
         $sql = "SELECT COUNT(*) AS cantidad
                 FROM usuarios u JOIN usuario_rol ur ON ur.id_usuario = u.id_usuario
@@ -61,7 +69,7 @@ class AdminModel{
     {
         $sql = "SELECT COUNT(*) AS cantidad
                 FROM preguntas p
-                WHERE p.estado = 'activa' AND p.fecha_inicio BETWEEN '$desde' AND '$hasta'";
+                WHERE p.estado = 'activa' AND p.fecha_registro BETWEEN '$desde' AND '$hasta'";
         return $this->database->query($sql)[0]['cantidad'];
     }
 
@@ -73,6 +81,21 @@ class AdminModel{
         ";
         return $this->database->query($sql)[0]['cantidad'];
     }
+
+    // Devuelve datos para el gráfico de línea de % de respuestas correctas
+    public function obtenerPorcentajeGeneral($desde, $hasta)
+    {
+        $sql = "SELECT DATE(p.fecha_inicio) AS fecha,
+                       ROUND(SUM(pp.acerto)/COUNT(*) * 100, 1) AS porcentajeCorrectas,
+                       ROUND(SUM(1 - pp.acerto)/COUNT(*) * 100, 1) AS porcentajeIncorrectas
+                FROM partida_pregunta pp
+                JOIN partidas p ON pp.id_partida = p.id_partida
+                WHERE p.fecha_inicio BETWEEN '$desde' AND '$hasta'
+                GROUP BY DATE(p.fecha_inicio)
+                ORDER BY DATE(p.fecha_inicio)";
+        return $this->database->query($sql);
+    }
+
 
 
 }
