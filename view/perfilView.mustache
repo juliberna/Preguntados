@@ -6,7 +6,7 @@
         <img src="/public/uploads/{{foto_perfil_url}}" alt="perfil" class="perfil-img">
         <div class="fs-1 mt-3 text-white" style="text-shadow: 1px 1px black">{{nombre_usuario}}</div>
       </div>
-      <div class="fs-6 mt-3" style="color: #ddd">Nivel 7<br>Ranking #125</div>
+        <div class="fs-4 mt-3" style="color: #ddd">Ranking #{{posicion_ranking}}</div>
       <div class="card">
         <div class="d-flex justify-content-center">
           <a href="/ranking/show" class="ranking-btn">Ver Ranking</a>
@@ -15,21 +15,22 @@
     </div>
 
         <div class="card" style="grid-column: 2">
-            <p class="fs-4 text-white">Partidas:</p>
-            <div class="d-flex flex-column align-items-center gap-3">
-                <span class="fs-5"><strong>54 Jugadas</strong></span>
-                <span class="fs-5" style="color: #59ff59">29 Ganadas</span>
-                <span class="fs-5" style="color: #ff6060">25 Perdidas</span>
+            <p class="fs-4 text-white">Estadísticas:</p>
+            <div class="d-flex flex-column align-items-center gap-2">
+                <span class="fs-5">{{cantidad_partidas}} partidas jugadas</span>
+                <span class="fs-5">Total Preguntas: {{total_preguntas}}</span>
+                <span class="fs-5 text-warning">Aciertos: {{porcentaje_acierto}}%</span>
+                <span class="fs-5">Mayor puntaje: {{mayor_puntaje}}</span>
             </div>
         </div>
 
         <div class="card" style="grid-column: 2;grid-row: 2">
             <p class="fs-4 text-white">Categorías destacadas:</p><br>
             <div class="d-flex flex-column align-items-center gap-3">
-        <span class="py-2 px-3 text-white"
-              style="background: #cc9600; width: 250px; border-radius: 40px">Deporte</span>
-                <span class="py-2 px-3 text-white" style="background: #c3007c; width: 250px; border-radius: 40px">Entretenimiento</span>
-                <span class="py-2 px-3 text-white" style="background: #008e39; width: 250px; border-radius: 40px">Geografia</span>
+                {{#categorias_destacadas}}
+                    <span class="py-2 px-3 text-white"
+                          style="background: {{color}}; width: 250px; border-radius: 40px">{{nombre}}</span>
+                {{/categorias_destacadas}}
             </div>
         </div>
 
