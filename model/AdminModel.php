@@ -73,6 +73,13 @@ class AdminModel{
         return $this->database->query($sql)[0]['cantidad'];
     }
 
+    public function obtenerPreguntasActivas()
+    {
+        $sql = "SELECT COUNT(*) AS cantidad
+                FROM preguntas p
+                WHERE p.estado = 'activa'";
+        return $this->database->query($sql)[0]['cantidad'];
+    }
     public function obtenerPromedioDePreguntasRespondidasCorrectamente($desde, $hasta)
     {
         $sql = "SELECT COUNT(*) AS totalRespuestas, SUM(pp.acerto) AS totalAciertos, ROUND(SUM(pp.acerto)/COUNT(*) * 100, 1) AS porcentaje_correctas

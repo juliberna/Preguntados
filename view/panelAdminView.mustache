@@ -21,13 +21,19 @@
         <div class="col-md-3">
             <div class="p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
                 <h4>{{partidas_jugadas}}</h4>
-                <p class="text-muted">Par. jugadas</p>
+                <p class="text-muted">Partidas jugadas</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
                 <h4>{{total_preguntas}}</h4>
-                <p class="text-muted">Preguntas</p>
+                <p class="text-muted">Total Preguntas</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
+                <h4>{{total_preguntas_creadas}}</h4>
+                <p class="text-muted">Preguntas Creadas</p>
             </div>
         </div>
         <div class="col-md-3">
@@ -113,9 +119,24 @@
                         format: '#\'%\''
                     }
                 });
-        }
+    }
 
 
     // Mapa interactivo
+    const map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
+    const puntos = {{&json_paises_usuarios}};
+    puntos.forEach(async p => {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(p.nombre_pais)}&format=json&limit=1`, {
+            headers: { 'User-Agent': 'Preguntopolis/1.0' }
+        });
+        const data = await res.json();
+        if (data.length) {
+            const { lat, lon } = data[0];
+            L.marker([lat, lon]).addTo(map).bindPopup(`${p.nombre_pais}: ${p.cantidad} usuarios`);
+        }
+    });
 </script>

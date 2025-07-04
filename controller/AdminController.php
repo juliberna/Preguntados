@@ -46,7 +46,8 @@ class AdminController{
 
         $total_jugadores = $this->model->obtenerTotalUsuarios();
         $PartidasJugadas = $this->model->obtenerPartidasJugadasPorFecha($desde, $hasta);
-        $total_preguntas = $this->model->obtenerPreguntasActivasPorFecha($desde, $hasta);
+        $total_preguntas_creadas = $this->model->obtenerPreguntasActivasPorFecha($desde, $hasta);
+        $total_preguntas = $this->model->obtenerPreguntasActivas();
         $distribucionEdad = $this->model->obtenerDistribucionPorRangoEdad($desde, $hasta);
         $total_jugadores_nuevos= $this->model->obtenerTotalUsuariosNuevosPorFecha($desde, $hasta);
 
@@ -87,13 +88,21 @@ class AdminController{
 
         $porcentaje_correctas = $this->model->obtenerPorcentajeGeneral($desde, $hasta);
 
-        $json_grafico_correctas = [
-            'fecha' => $porcentaje_correctas[0]['fecha'],
-            'porcentajeIncorrectas' => $porcentaje_correctas[0]['porcentajeIncorrectas'],
-            'porcentajeCorrectas' => $porcentaje_correctas[0]['porcentajeCorrectas']
-        ];
-
-
+        if (isset($porcentaje_correctas[0])) {
+            $json_grafico_correctas = [
+                'fecha' => $porcentaje_correctas[0]['fecha'],
+                'porcentajeIncorrectas' => $porcentaje_correctas[0]['porcentajeIncorrectas'],
+                'porcentajeCorrectas' => $porcentaje_correctas[0]['porcentajeCorrectas']
+            ];
+        } else {
+            // Manejar caso sin datos: asignar valores por defecto o mostrar mensaje
+            $json_grafico_correctas = [
+                'fecha' => null,
+                'porcentajeIncorrectas' => 0,
+                'porcentajeCorrectas' => 0
+            ];
+        }
+        $paises_usuarios = $this->model->obtenerUsuariosPorPaisPorFecha($desde, $hasta);
 
         $this->view->render("panelAdmin", [
             'title' => 'Dashboard',
@@ -101,6 +110,7 @@ class AdminController{
             'total_jugadores_nuevos' => $total_jugadores_nuevos,
             'partidas_jugadas' => $PartidasJugadas,
             'total_preguntas' => $total_preguntas,
+            'total_preguntas_creadas' => $total_preguntas_creadas,
             'edad_menor' => $edad_menor,
             'edad_media' => $edad_media,
             'edad_mayor' => $edad_mayor,
@@ -113,7 +123,8 @@ class AdminController{
             'filtro_mes' => $filtro === 'mes',
             'filtro_anio' => $filtro === 'anio',
             'porcentaje_correctas' => $porcentaje_correctas,
-            'json_grafico_correctas' => $json_grafico_correctas
+            'json_grafico_correctas' => $json_grafico_correctas,
+            'json_paises_usuarios' => json_encode($paises_usuarios)
         ]);
     }
 
