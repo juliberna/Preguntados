@@ -190,7 +190,8 @@ class Configuration
     {
         return new PartidaController(
             new PartidaModel($this->getDatabase()),
-            $this->getViewer()
+            $this->getViewer(),
+            new PreguntaModel($this->getDatabase())
         );
     }
 

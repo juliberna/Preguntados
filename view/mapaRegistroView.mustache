@@ -1,6 +1,11 @@
 <main class="bg-fondo min-vh-100 d-flex flex-column flex-md-row justify-content-center align-items-center px-3 py-4 text-white">
     <div class="bg-opacity-75 text-white rounded-4 p-4" style="background: #511F3B;max-width: 500px; width: 100%">
-        <form action="/registro/procesar" method="POST">
+        {{#error}}
+            <div class="alert alert-danger text-center" role="alert">
+                {{error}}
+            </div>
+        {{/error}}
+        <form action="/registro/procesar" method="POST" class="form">
             <div class="mb-3 text-center fw-bold fs-5">
                 <p>Ubicación en el mapa</p>
             </div>
@@ -59,5 +64,17 @@
                     document.getElementById("pais").textContent = data.pais;
                     document.getElementById("ciudad").textContent = data.provincia;
                 });
+    });
+
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (e) {
+        const pais = document.getElementById("pais").textContent;
+        const ciudad = document.getElementById("ciudad").textContent;
+
+        if (pais.includes("Desconocido") || ciudad.includes("Desconocido") ||
+                pais.includes("Seleccione") || ciudad.includes("Seleccione")) {
+            e.preventDefault();
+            alert("Por favor, seleccioná una ubicación válida.");
+        }
     });
 </script>

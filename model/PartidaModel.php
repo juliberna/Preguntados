@@ -137,7 +137,7 @@ class PartidaModel
             return;
         }
 
-        $id_resp = intval($id_respuesta);
+        $id_resp = is_null($id_respuesta) ? "NULL" : intval($id_respuesta);
         $acerto = intval($acerto);
 
 
@@ -165,13 +165,6 @@ class PartidaModel
         $this->db->execute($sql);
         return $this->db->getLastInsertId();
 
-    }
-
-    public function getCategoriaAleatoria()
-    {
-        $sql = "SELECT * FROM categoria ORDER BY RAND() LIMIT 1";
-        $resultado = $this->db->query($sql);
-        return $resultado[0] ?? null;
     }
 
     public function marcarPreguntaComoVista($id_usuario, $id_pregunta)
@@ -225,7 +218,7 @@ class PartidaModel
             return $this->obtenerPregunta($id_usuario, $id_categoria);
         }
 
-        // d) agrupo y selecciono según nivel
+        // agrupo y selecciono según nivel
         $grupos = $this->agruparPorNivel($preguntas);
 
         $preg = $this->elegirPorNivelUsuario($grupos, $nivelUsuario);

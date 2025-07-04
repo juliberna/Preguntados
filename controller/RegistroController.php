@@ -108,6 +108,14 @@ class RegistroController
         // Obtener país y ciudad desde backend
         $ubicacion = $this->ubicacionModel->obtenerPaisYCiudadPorCoordenadas($lat, $lng);
 
+        if (!$ubicacion || $ubicacion['pais'] === 'Desconocido' || $ubicacion['ciudad'] === 'Desconocido') {
+            $this->view->render("mapaRegistro", [
+                'title' => 'Elige tu ubicacion',
+                'error' => 'Seleccioná una ubicación válida en el mapa.'
+            ]);
+            return;
+        }
+
         // Crear / Obtener ids
         $idPais = $this->ubicacionModel->obtenerOCrearPais($ubicacion['pais']);
         $idCiudad = $this->ubicacionModel->obtenerOCrearCiudad($ubicacion['ciudad'], $idPais);
@@ -208,5 +216,33 @@ class RegistroController
             'title' => $title,
             'message' => $message
         ]);
+    }
+
+    public function checkEmail()
+    {
+        $email = $_POST['email'] ?? '';
+
+        if (empty($email)) {
+            echo json_encode(['exists' => false]);
+            return;
+        }
+
+        $exists = $this->model->existeEmail($email);
+        header('Content-Type: application/json');
+        echo json_encode(['exists' => $exists]);
+    }
+
+    public function checkUsuario()
+    {
+        $usuario = $_POST['usuario'] ?? '';
+
+        if (empty($usuario)) {
+            echo json_encode(['exists' => false]);
+            return;
+        }
+
+        $exists = $this->model->existeUsuario($usuario);
+        header('Content-Type: application/json');
+        echo json_encode(['exists' => $exists]);
     }
 }
