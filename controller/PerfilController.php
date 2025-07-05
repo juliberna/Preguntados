@@ -16,7 +16,14 @@ class PerfilController
       $id_usuario = $_GET['idUsuario'] ?? ($_SESSION['usuario_id'] ?? null);
 
       $datos = $this->model->getDatos($id_usuario);
+
+      $tieneEstadisticas = true;
       $cantidadPartidas = $this->model->getCantidadPartidasJugadas($id_usuario);
+
+      if ($cantidadPartidas === "0") {
+          $tieneEstadisticas = false;
+      }
+
       $totalPreguntas = $this->model->getTotalPreguntasRespondidas($id_usuario);
       $porcentajeAcierto = $this->model->getPorcentajeAcierto($id_usuario);
       $mayorPuntaje = $this->model->getMayorPuntajePartida($id_usuario);
@@ -45,7 +52,8 @@ class PerfilController
               'porcentaje_acierto' => $porcentajeAcierto,
               'mayor_puntaje' => $mayorPuntaje,
               'categorias_destacadas' => $categoriasDestacadas,
-              'posicion_ranking' => $posicionRanking
+              'posicion_ranking' => $posicionRanking,
+              'tiene_estadisticas' => $tieneEstadisticas
           ],
           $usuario
       ));

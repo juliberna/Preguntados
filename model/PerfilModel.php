@@ -43,10 +43,10 @@ class PerfilModel
         $sql = "SELECT preguntas_acertadas, preguntas_entregadas FROM usuarios WHERE id_usuario = $id_usuario";
         $resultado = $this->database->query($sql);
 
+
         $acertadas = $resultado[0]['preguntas_acertadas'] ?? 0;
         $entregadas = $resultado[0]['preguntas_entregadas'] ?? 0;
-
-        if ($entregadas === 0) {
+        if ($entregadas === "0") {
             return 0;
         }
 
