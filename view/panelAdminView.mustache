@@ -1,142 +1,326 @@
 {{> navbar}}
-<div class="container-fluid py-4 bg-dark">
+<div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <form method="GET" class="d-flex gap-2">
+        <form method="GET" class="d-flex gap-2 align-items-center">
             <select name="filtro" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="dia" {{#filtro_dia}}selected{{/filtro_dia}}>Día</option>
                 <option value="semana" {{#filtro_semana}}selected{{/filtro_semana}}>Semana</option>
                 <option value="mes" {{#filtro_mes}}selected{{/filtro_mes}}>Mes</option>
                 <option value="anio" {{#filtro_anio}}selected{{/filtro_anio}}>Año</option>
+                <option value="personalizado" {{#filtro_personalizado}}selected{{/filtro_personalizado}}>Personalizado
+                </option>
             </select>
+
+            {{#filtro_personalizado}}
+                <input type="date" name="desde" value="{{desde}}" class="form-control form-control-sm">
+                <input type="date" name="hasta" value="{{hasta}}" class="form-control form-control-sm">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Filtrar</button>
+            {{/filtro_personalizado}}
         </form>
     </div>
+    <div>
+        <p class="text-muted small ms-2">Mostrando datos para: <strong>{{rango_mostrar}}</strong></p>
 
-    <div class="row text-center mb-4">
-        <div class="col-md-3">
-            <div class="p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
-                <h4>{{total_jugadores}}</h4>
-                <p class="text-muted">Jugadores Totales</p>
+        <div class="row text-center mb-4">
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_jugadores}}</h4>
+                    <p class="text-white-50">Jugadores Totales</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{partidas_jugadas}}</h4>
+                    <p class="text-white-50">Partidas Jugadas</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_preguntas}}</h4>
+                    <p class="text-white-50">Preguntas en Juego</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_preguntas_creadas}}</h4>
+                    <p class="text-white-50">Preg. Creadas</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_jugadores_nuevos}}</h4>
+                    <p class="text-white-50">Nuevos Usuarios</p></div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
-                <h4>{{partidas_jugadas}}</h4>
-                <p class="text-muted">Partidas jugadas</p>
+
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <div class="float-end">
+                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoEdad')">
+                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
+                            </a>
+                        </div>
+                        <h5>Usuarios por Grupo de Edad</h5>
+                    </div>
+                    {{#hay_datos_edad}}
+                        <div id="graficoEdad" style="height: 300px;"></div>
+                    {{/hay_datos_edad}}
+                    {{^hay_datos_edad}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de edad para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_edad}}
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <div class="float-end">
+                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoPorcentaje')">
+                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
+                            </a>
+                        </div>
+                        <h5>Distribución por País</h5>
+                    </div>
+                    {{#hay_datos_paises}}
+                        <div id="graficoTortaPaises" style="height: 300px;"></div>
+                    {{/hay_datos_paises}}
+                    {{^hay_datos_paises}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de países para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_paises}}
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <div class="float-end">
+                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoGenero')">
+                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
+                            </a>
+                        </div>
+                        <h5>Usuarios por Genero</h5>
+                    </div>
+                    {{#hay_datos_genero}}
+                        <div id="graficoGenero" style="height: 300px;"></div>
+                    {{/hay_datos_genero}}
+                    {{^hay_datos_genero}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de género para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_genero}}
+                </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
-                <h4>{{total_preguntas}}</h4>
-                <p class="text-muted">Total Preguntas</p>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <div class="float-end">
+                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoPorcentaje')">
+                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
+                            </a>
+                        </div>
+                        <h5>Porcentaje de Respuestas</h5>
+                    </div>
+                    {{#hay_datos_porcentaje}}
+                        <div id="graficoPorcentaje" style="height: 300px;"></div>
+                    {{/hay_datos_porcentaje}}
+                    {{^hay_datos_porcentaje}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>No hay respuestas registradas para este período.</p>
+                        </div>
+                    {{/hay_datos_porcentaje}}
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
-                <h4>{{total_preguntas_creadas}}</h4>
-                <p class="text-muted">Preguntas Creadas</p>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Usuarios por Pais</h5>
+                    </div>
+                    {{#hay_datos_paises}}
+                        <div id="map" style="height: 300px; border-radius: 10px;"></div>
+                    {{/hay_datos_paises}}
+                    {{^hay_datos_paises}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de países para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_paises}}
+                </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class=" p-3 rounded shadow-sm" style="background-color: #4C4C4C;">
-                <h4>{{total_jugadores_nuevos}}</h4>
-                <p class="text-muted">Us. nuevos</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div id="graficoEdad" style="height: 300px;"></div>
-        </div>
-        <div class="col-md-4">
-            <div id="map" style="height: 300px; border-radius: 10px;"></div>
-        </div>
-        <div class="col-md-4">
-            <div id="graficoGenero" style="height: 300px;"></div>
-        </div>
-    </div>
-
-
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="bg-white rounded shadow-sm p-3">
-                <h5 class="mb-3">Preguntas respondidas correctamente</h5>
-                <div id="graficoCorrectasLinea" style="height: 300px;"></div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <div class="float-end">
+                            <a class="dropdown-item" href="#" onclick="imprimirElemento('tablaRendimiento')">
+                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
+                            </a>
+                        </div>
+                        <h5>Rendimiento por Usuario</h5>
+                    </div>
+                    <div id="tablaRendimiento" class="table-responsive" style="height: 350px;">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Partidas</th>
+                                <th>% Correctas</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#rendimiento_usuarios}}
+                                <tr>
+                                    <td>{{nombre_usuario}}</td>
+                                    <td>{{partidas_jugadas}}</td>
+                                    <td>{{porcentaje_correctas}}%</td>
+                                </tr>
+                            {{/rendimiento_usuarios}}
+                            {{^rendimiento_usuarios}}
+                                <tr>
+                                    <td colspan="3" class="text-center">No hay datos de rendimiento.</td>
+                                </tr>
+                            {{/rendimiento_usuarios}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <script>
-    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', {'packages': ['corechart']});
     google.charts.setOnLoadCallback(drawCharts);
 
     function drawCharts() {
-        // Edad
-        const dataEdad = google.visualization.arrayToDataTable([
-            ['Rango de edad', 'Cantidad'],
-            ['Menor', {{edad_menor}}],
-            ['Mediana edad', {{edad_media}}],
-            ['Mayor', {{edad_mayor}}]
-        ]);
-        new google.visualization.PieChart(document.getElementById('graficoEdad'))
-                .draw(dataEdad, {title: 'Edades', pieHole: 0.4});
+        const graficoEdad = document.getElementById('graficoEdad');
+        if (graficoEdad) {
+            const dataEdad = google.visualization.arrayToDataTable([
+                ['Rango de edad', 'Cantidad'],
+                ['Menor', {{edad.menor}}],
+                ['Mediana edad', {{edad.media}}],
+                ['Mayor', {{edad.mayor}}]
+            ]);
+            const chartEdad = new google.visualization.PieChart(graficoEdad);
+            chartEdad.draw(dataEdad, {title: 'Edades', pieHole: 0.4});
+            graficoEdad.__chart__ = chartEdad;
 
-        // Género
-        const dataGenero = google.visualization.arrayToDataTable([
-            ['Género', 'Cantidad'],
-            ['Femenino', {{genero_femenino}}],
-            ['Masculino', {{genero_masculino}}],
-            ['No especificado', {{genero_otro}}]
-        ]);
-        new google.visualization.PieChart(document.getElementById('graficoGenero'))
-                .draw(dataGenero, {title: 'Géneros', pieHole: 0.4});
+        }
 
-        // Correctas por fecha (línea)
-        const dataLinea = new google.visualization.DataTable();
-        dataLinea.addColumn('string', 'Fecha');
-        dataLinea.addColumn('number', '% Correctas');
-        dataLinea.addColumn('number', '% Incorrectas');
-        dataLinea.addRows([
-            {{#json_grafico_correctas}}
-                ['{{filtro_Actual}}', {{porcentajeCorrectas}}, {{porcentajeIncorrectas}}],
-            {{/json_grafico_correctas}}
-        ]);
-        new google.visualization.BarChart(document.getElementById('graficoCorrectasLinea'))
-                .draw(dataLinea, {
-                    title: '% de Respuestas Respondidas',
-                    curveType: 'function',
-                    legend: { position: 'bottom' },
-                    vAxis: {
-                        minValue: 0,
-                        maxValue: 100,
-                        format: '#\'%\''
-                    }
-                });
+        const graficoGenero = document.getElementById('graficoGenero');
+        if (graficoGenero) {
+            const dataGenero = google.visualization.arrayToDataTable([
+                ['Género', 'Cantidad'],
+                ['Femenino', {{genero.femenino}}],
+                ['Masculino', {{genero.masculino}}],
+                ['No especificado', {{genero.otro}}]
+            ]);
+            const chartGenero = new google.visualization.PieChart(graficoGenero);
+            chartGenero.draw(dataGenero, {title: 'Géneros', pieHole: 0.4});
+            graficoGenero.__chart__ = chartGenero;
+        }
+
+        const graficoPorcentaje = document.getElementById('graficoPorcentaje');
+        if (graficoPorcentaje) {
+            const dataLinea = new google.visualization.DataTable();
+            dataLinea.addColumn('string', 'Fecha');
+            dataLinea.addColumn('number', '% Correctas');
+            dataLinea.addColumn('number', '% Incorrectas');
+            dataLinea.addRows([
+                {{#porcentaje_general}}
+                    ['{{rango_mostrar}}', {{porcentajeCorrectas}}, {{porcentajeIncorrectas}}],
+                {{/porcentaje_general}}
+            ]);
+            const chartPorcentaje = new google.visualization.BarChart(graficoPorcentaje);
+            chartPorcentaje.draw(dataLinea, {
+                title: '% de Respuestas Respondidas',
+                curveType: 'function',
+                legend: {position: 'bottom'},
+                vAxis: {
+                    minValue: 0,
+                    maxValue: 100,
+                    format: '#\'%\''
+                }
+            });
+            graficoPorcentaje.__chart__ = chartPorcentaje;
+        }
+
+        const graficoTortaPaises = document.getElementById('graficoTortaPaises');
+        if (graficoTortaPaises) {
+            const dataPaises = new google.visualization.DataTable();
+            dataPaises.addColumn('string', 'País');
+            dataPaises.addColumn('number', 'Usuarios');
+
+            const paises = JSON.parse('{{{json_paises_usuarios}}}');
+            paises.forEach(p => {
+                dataPaises.addRow([p.nombre_pais, parseInt(p.cantidad)]);
+            });
+
+            const chartTortaPaises = new google.visualization.PieChart(graficoTortaPaises);
+            chartTortaPaises.draw(dataPaises, {title: 'Usuarios por País', pieHole: 0.4});
+            graficoTortaPaises.__chart__ = chartTortaPaises;
+        }
     }
 
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        const map = L.map('map').setView([20, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    // Mapa interactivo
-    const map = L.map('map').setView([0, 0], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    const puntos = {{&json_paises_usuarios}};
-    puntos.forEach(async p => {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(p.nombre_pais)}&format=json&limit=1`, {
-            headers: { 'User-Agent': 'Preguntopolis/1.0' }
+        const puntos = JSON.parse('{{{json_paises_usuarios}}}');
+        puntos.forEach(async p => {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(p.nombre_pais)}&format=json&limit=1`, {
+                    headers: {'User-Agent': 'Preguntopolis/1.0'}
+                });
+                const data = await res.json();
+                if (data.length > 0) {
+                    const {lat, lon} = data[0];
+                    L.marker([lat, lon]).addTo(map).bindPopup(`<b>${p.nombre_pais}</b>: ${p.cantidad} usuarios`);
+                }
+            } catch (err) {
+                console.warn("No se pudo geolocalizar", p.nombre_pais, err);
+            }
         });
-        const data = await res.json();
-        if (data.length) {
-            const { lat, lon } = data[0];
-            L.marker([lat, lon]).addTo(map).bindPopup(`${p.nombre_pais}: ${p.cantidad} usuarios`);
+    }
+
+    function imprimirGrafico(chartId) {
+        const chartElement = document.getElementById(chartId);
+        if (!chartElement || !chartElement.__chart__) {
+            alert("El gráfico aún no está disponible para imprimir.");
+            return;
         }
-    });
+
+        const chart = chartElement.__chart__;
+        const imgUri = chart.getImageURI();
+
+        const ventana = window.open('', '_blank');
+        ventana.document.write(`<img src="${imgUri}" style="width:100%">`);
+        ventana.document.close();
+        ventana.focus();
+        ventana.print();
+    }
+
+    function imprimirElemento(idElemento) {
+        const contenido = document.getElementById(idElemento).outerHTML;
+        const ventana = window.open('', '', 'width=800,height=600');
+        ventana.document.write(`
+        <html>
+            <head>
+                <title>Impresión</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+                </style>
+            </head>
+            <body>
+                ${contenido}
+            </body>
+        </html>
+    `);
+        ventana.document.close();
+        ventana.focus();
+        ventana.print();
+    }
 </script>

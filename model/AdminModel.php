@@ -1,10 +1,12 @@
 <?php
 
-class AdminModel{
+class AdminModel
+{
 
     private $database;
 
-    public function __construct($database){
+    public function __construct($database)
+    {
         $this->database = $database;
     }
 
@@ -80,6 +82,7 @@ class AdminModel{
                 WHERE p.estado = 'activa'";
         return $this->database->query($sql)[0]['cantidad'];
     }
+
     public function obtenerPromedioDePreguntasRespondidasCorrectamente($desde, $hasta)
     {
         $sql = "SELECT COUNT(*) AS totalRespuestas, SUM(pp.acerto) AS totalAciertos, ROUND(SUM(pp.acerto)/COUNT(*) * 100, 1) AS porcentaje_correctas
@@ -92,17 +95,45 @@ class AdminModel{
     // Devuelve datos para el gráfico de línea de % de respuestas correctas
     public function obtenerPorcentajeGeneral($desde, $hasta)
     {
-        $sql = "SELECT DATE(p.fecha_inicio) AS fecha,
-                       ROUND(SUM(pp.acerto)/COUNT(*) * 100, 1) AS porcentajeCorrectas,
-                       ROUND(SUM(1 - pp.acerto)/COUNT(*) * 100, 1) AS porcentajeIncorrectas
-                FROM partida_pregunta pp
-                JOIN partidas p ON pp.id_partida = p.id_partida
-                WHERE p.fecha_inicio BETWEEN '$desde' AND '$hasta'
-                GROUP BY DATE(p.fecha_inicio)
-                ORDER BY DATE(p.fecha_inicio)";
+        $sql = "SELECT
+                ROUND(SUM(pp.acerto) / COUNT(*) * 100, 1) AS porcentajeCorrectas,
+                ROUND(SUM(1 - pp.acerto) / COUNT(*) * 100, 1) AS porcentajeIncorrectas
+            FROM partida_pregunta pp
+            JOIN partidas p ON pp.id_partida = p.id_partida
+            WHERE p.fecha_inicio BETWEEN '$desde' AND '$hasta'";
         return $this->database->query($sql);
     }
 
+    public function obtenerRendimientosUsuarios($desde, $hasta): array
+    {
+        $sql = "
+        SELECT 
+            u.nombre_usuario,
+            COUNT(DISTINCT p.id_partida) AS partidas_jugadas,
+            ROUND(
+                SUM(pp.acerto) / COUNT(*) * 100
+            , 1) AS porcentaje_correctas
+        FROM partida_pregunta pp
+        JOIN partidas p 
+            ON pp.id_partida = p.id_partida
+        JOIN usuarios u 
+            ON p.id_usuario = u.id_usuario
+        WHERE p.fecha_inicio BETWEEN '$desde' AND '$hasta'
+        GROUP BY u.id_usuario, u.nombre_usuario
+        ORDER BY partidas_jugadas DESC, porcentaje_correctas DESC
+        LIMIT 10;
+    ";
 
+        return $this->database->query($sql);
+    }
+
+    public function obtenerUsuariosPaisPorFecha($desde, $hasta)
+    {
+        $sql = "SELECT u.nombre_usuario, p.nombre_pais
+        FROM usuarios u JOIN paises p ON u.id_pais = p.id_pais
+        WHERE u.fecha_registro BETWEEN '$desde' AND '$hasta'
+        GROUP BY u.id_pais";
+        return $this->database->query($sql);
+    }
 
 }
