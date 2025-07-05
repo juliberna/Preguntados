@@ -14,7 +14,7 @@ class RankingModel
         $sql = "SELECT u.id_usuario, u.nombre_usuario, u.foto_perfil_url, u.puntaje_acumulado
             FROM usuarios u
             JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario
-            WHERE ur.id_rol = 1
+            WHERE ur.id_rol = 1 AND u.puntaje_acumulado > 0
             ORDER BY u.puntaje_acumulado DESC";
         return $this->database->query($sql);
     }
