@@ -21,13 +21,30 @@ class RankingModel
 
     public function obtenerPartidasJugadas()
     {
-        $sql = "SELECT p.id_partida, u.nombre_usuario, p.fecha_inicio, p.fecha_fin, p.puntaje_final, u.id_usuario
-            FROM partidas p
-            JOIN usuarios u ON p.id_usuario = u.id_usuario
-            JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario
-            WHERE ur.id_rol = 1
-            ORDER BY p.puntaje_final DESC, p.fecha_fin DESC
-            LIMIT 10";
+        $sql = "
+                SELECT id_partida, nombre_usuario, fecha_inicio, fecha_fin, puntaje_final, id_usuario
+                FROM (
+                    SELECT 
+                        p.id_partida,
+                        u.nombre_usuario,
+                        p.fecha_inicio,
+                        p.fecha_fin,
+                        p.puntaje_final,
+                        u.id_usuario,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY u.id_usuario 
+                            ORDER BY p.puntaje_final DESC, p.fecha_fin DESC
+                        ) AS rn
+                    FROM partidas p
+                    JOIN usuarios u ON p.id_usuario = u.id_usuario
+                    JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario
+                    WHERE ur.id_rol = 1 AND p.fecha_fin IS NOT NULL
+                ) AS sub
+                WHERE rn = 1
+                ORDER BY puntaje_final DESC, fecha_fin DESC
+                LIMIT 10;
+        ";
+        
         return $this->database->query($sql);
     }
 
