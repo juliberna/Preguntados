@@ -4,83 +4,37 @@ class AdminController{
 
     private $model;
     private $view;
+    private $pdfGenerator;
 
 
-    public function __construct($model, $view)
+    public function __construct($model, $view, $pdfGenerator)
     {
         $this->model = $model;
         $this->view = $view;
-
+        $this->pdfGenerator = $pdfGenerator;
     }
 
     public function show()
     {
         $filtro = $_GET['filtro'] ?? 'mes';
-        $rangoFechas = $this->getRangoFechas($filtro, $_GET);
-        $desde = $rangoFechas['desde'];
-        $hasta = $rangoFechas['hasta'];
+        $data = $this->prepararDatosPanel($filtro, $_GET);
 
-        $edad = [
-            'menor' => 0,
-            'media' => 0,
-            'mayor' => 0
-        ];
-        foreach ($this->model->obtenerDistribucionPorRangoEdad($desde, $hasta) as $fila) {
-            switch ($fila['rangoEdad']) {
-                case 'Menor': $edad['menor'] = (int)$fila['cantidad']; break;
-                case 'Mediana edad': $edad['media'] = (int)$fila['cantidad']; break;
-                case 'Mayor': $edad['mayor'] = (int)$fila['cantidad']; break;
-            }
-        }
+        $this->view->render("panelAdmin", $data);
+    }
 
-        $genero = [
-            'femenino' => 0,
-            'masculino' => 0,
-            'otro' => 0
-        ];
-        foreach ($this->model->obtenerDistribucionPorGenero($desde, $hasta) as $fila) {
-            switch ($fila['descripcion']) {
-                case 'Femenino': $genero['femenino'] = (int)$fila['cantidad']; break;
-                case 'Masculino': $genero['masculino'] = (int)$fila['cantidad']; break;
-                case 'Prefiero no cargarlo': $genero['otro'] = (int)$fila['cantidad']; break;
-            }
-        }
+    public function generarPdfDashboard()
+    {
+        $filtro = $_POST['filtro'] ?? 'mes';
+        $data = $this->prepararDatosPanel($filtro, $_POST);
 
-        $porcentajeGeneral = $this->model->obtenerPorcentajeGeneral($desde, $hasta);
-        $usuariosPais = $this->model->obtenerUsuariosPorPaisPorFecha($desde, $hasta);
-        $rendimientoUsuarios = $this->model->obtenerRendimientosUsuarios($desde, $hasta);
+        // Imagenes de los graficos
+        $data['grafico_edad'] = $_POST['graficoEdad'] ?? null;
+        $data['grafico_genero'] = $_POST['graficoGenero'] ?? null;
+        $data['grafico_porcentaje'] = $_POST['graficoPorcentaje'] ?? null;
+        $data['grafico_paises'] = $_POST['graficoTortaPaises'] ?? null;
 
-        $this->view->render("panelAdmin", [
-            'title' => 'Dashboard',
-            'filtro_Actual' => $filtro,
-            'filtro_dia' => $filtro === 'dia',
-            'filtro_semana' => $filtro === 'semana',
-            'filtro_mes' => $filtro === 'mes',
-            'filtro_anio' => $filtro === 'anio',
-            'filtro_personalizado' => $filtro === 'personalizado',
-            'desde' => substr($desde, 0, 10),
-            'hasta' => substr($hasta, 0, 10),
-            'rango_mostrar' => date('d/m/Y', strtotime($desde)) . ' al ' . date('d/m/Y', strtotime($hasta)),
-
-            'total_jugadores' => $this->model->obtenerTotalUsuarios(),
-            'total_jugadores_nuevos' => $this->model->obtenerTotalUsuariosNuevosPorFecha($desde, $hasta),
-            'partidas_jugadas' => $this->model->obtenerPartidasJugadasPorFecha($desde, $hasta),
-            'total_preguntas' => $this->model->obtenerPreguntasActivas(),
-            'total_preguntas_creadas' => $this->model->obtenerPreguntasActivasPorFecha($desde, $hasta),
-
-            'edad' => $edad,
-            'genero' => $genero,
-            'hay_datos_edad' => array_sum($edad) > 0,
-            'hay_datos_genero' => array_sum($genero) > 0,
-
-            'porcentaje_general' => $porcentajeGeneral,
-            'hay_datos_porcentaje' => $porcentajeGeneral[0]['porcentajeCorrectas'] !== null,
-
-            'json_paises_usuarios' => json_encode($usuariosPais),
-            'hay_datos_paises' => count($usuariosPais) > 0,
-
-            'rendimiento_usuarios' => $rendimientoUsuarios
-        ]);
+        $html = $this->view->renderToString('panelAdminPdf', $data);
+        $this->pdfGenerator->generarPdf($html, "Dashboard.pdf", false);
     }
 
     private function getRangoFechas($filtro, $parametros): array {
@@ -119,5 +73,66 @@ class AdminController{
         }
 
         return ['desde' => $desde, 'hasta' => $hasta];
+    }
+
+    private function prepararDatosPanel($filtro, $parametros): array
+    {
+        $rangoFechas = $this->getRangoFechas($filtro, $parametros);
+        $desde = $rangoFechas['desde'];
+        $hasta = $rangoFechas['hasta'];
+
+        $edad = ['menor' => 0, 'media' => 0, 'mayor' => 0];
+        foreach ($this->model->obtenerDistribucionPorRangoEdad($desde, $hasta) as $fila) {
+            switch ($fila['rangoEdad']) {
+                case 'Menor': $edad['menor'] = (int)$fila['cantidad']; break;
+                case 'Mediana edad': $edad['media'] = (int)$fila['cantidad']; break;
+                case 'Mayor': $edad['mayor'] = (int)$fila['cantidad']; break;
+            }
+        }
+
+        $genero = ['femenino' => 0, 'masculino' => 0, 'otro' => 0];
+        foreach ($this->model->obtenerDistribucionPorGenero($desde, $hasta) as $fila) {
+            switch ($fila['descripcion']) {
+                case 'Femenino': $genero['femenino'] = (int)$fila['cantidad']; break;
+                case 'Masculino': $genero['masculino'] = (int)$fila['cantidad']; break;
+                case 'Prefiero no cargarlo': $genero['otro'] = (int)$fila['cantidad']; break;
+            }
+        }
+
+        $porcentajeGeneral = $this->model->obtenerPorcentajeGeneral($desde, $hasta);
+        $usuariosPais = $this->model->obtenerUsuariosPorPaisPorFecha($desde, $hasta);
+        $rendimientoUsuarios = $this->model->obtenerRendimientosUsuarios($desde, $hasta);
+
+        return [
+            'title' => 'Dashboard',
+            'filtro_Actual' => $filtro,
+            'filtro_dia' => $filtro === 'dia',
+            'filtro_semana' => $filtro === 'semana',
+            'filtro_mes' => $filtro === 'mes',
+            'filtro_anio' => $filtro === 'anio',
+            'filtro_personalizado' => $filtro === 'personalizado',
+            'desde' => $desde,
+            'hasta' => $hasta,
+            'rango_mostrar' => date('d/m/Y', strtotime($desde)) . ' al ' . date('d/m/Y', strtotime($hasta)),
+
+            'total_jugadores' => $this->model->obtenerTotalUsuarios(),
+            'total_jugadores_nuevos' => $this->model->obtenerTotalUsuariosNuevosPorFecha($desde, $hasta),
+            'partidas_jugadas' => $this->model->obtenerPartidasJugadasPorFecha($desde, $hasta),
+            'total_preguntas' => $this->model->obtenerPreguntasActivas(),
+            'total_preguntas_creadas' => $this->model->obtenerPreguntasActivasPorFecha($desde, $hasta),
+
+            'edad' => $edad,
+            'genero' => $genero,
+            'hay_datos_edad' => array_sum($edad) > 0,
+            'hay_datos_genero' => array_sum($genero) > 0,
+
+            'porcentaje_general' => $porcentajeGeneral,
+            'hay_datos_porcentaje' => isset($porcentajeGeneral[0]['porcentajeCorrectas']),
+
+            'json_paises_usuarios' => json_encode($usuariosPais),
+            'hay_datos_paises' => count($usuariosPais) > 0,
+
+            'rendimiento_usuarios' => $rendimientoUsuarios
+        ];
     }
 }

@@ -17,6 +17,19 @@
                 <button type="submit" class="btn btn-outline-secondary btn-sm">Filtrar</button>
             {{/filtro_personalizado}}
         </form>
+        <div class="d-flex justify-content-end mb-3">
+            <form id="pdfForm" method="POST" action="/admin/generarPdfDashboard" target="_blank">
+                <input type="hidden" name="filtro" value="{{filtro_Actual}}">
+                <input type="hidden" name="desde" value="{{desde}}">
+                <input type="hidden" name="hasta" value="{{hasta}}">
+                <input type="hidden" name="graficoEdad" id="inputGraficoEdad">
+                <input type="hidden" name="graficoGenero" id="inputGraficoGenero">
+                <input type="hidden" name="graficoPorcentaje" id="inputGraficoPorcentaje">
+                <input type="hidden" name="graficoTortaPaises" id="inputGraficoTortaPaises">
+                <button type="button" class="btn btn-primary" onclick="enviarGraficos()">Descargar Dashboard PDF
+                </button>
+            </form>
+        </div>
     </div>
     <div>
         <p class="text-muted small ms-2">Mostrando datos para: <strong>{{rango_mostrar}}</strong></p>
@@ -48,11 +61,6 @@
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <div class="float-end">
-                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoEdad')">
-                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
-                            </a>
-                        </div>
                         <h5>Usuarios por Grupo de Edad</h5>
                     </div>
                     {{#hay_datos_edad}}
@@ -68,11 +76,6 @@
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <div class="float-end">
-                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoPorcentaje')">
-                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
-                            </a>
-                        </div>
                         <h5>Distribución por País</h5>
                     </div>
                     {{#hay_datos_paises}}
@@ -88,11 +91,6 @@
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <div class="float-end">
-                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoGenero')">
-                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
-                            </a>
-                        </div>
                         <h5>Usuarios por Genero</h5>
                     </div>
                     {{#hay_datos_genero}}
@@ -110,11 +108,6 @@
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <div class="float-end">
-                            <a class="dropdown-item" href="#" onclick="imprimirGrafico('graficoPorcentaje')">
-                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
-                            </a>
-                        </div>
                         <h5>Porcentaje de Respuestas</h5>
                     </div>
                     {{#hay_datos_porcentaje}}
@@ -145,11 +138,6 @@
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-header">
-                        <div class="float-end">
-                            <a class="dropdown-item" href="#" onclick="imprimirElemento('tablaRendimiento')">
-                                <img src="/public/images/imprimir.png" alt="Icono imprimir" style="max-height: 25px;">
-                            </a>
-                        </div>
                         <h5>Rendimiento por Usuario</h5>
                     </div>
                     <div id="tablaRendimiento" class="table-responsive" style="height: 350px;">
@@ -284,43 +272,28 @@
         });
     }
 
-    function imprimirGrafico(chartId) {
-        const chartElement = document.getElementById(chartId);
-        if (!chartElement || !chartElement.__chart__) {
-            alert("El gráfico aún no está disponible para imprimir.");
-            return;
+    function enviarGraficos() {
+        const charts = {
+            graficoEdad: document.getElementById('graficoEdad'),
+            graficoGenero: document.getElementById('graficoGenero'),
+            graficoPorcentaje: document.getElementById('graficoPorcentaje'),
+            graficoTortaPaises: document.getElementById('graficoTortaPaises'),
+        };
+
+        for (const [id, el] of Object.entries(charts)) {
+            const input = document.getElementById(`input${capitalize(id)}`);
+
+            if (el && el.__chart__) {
+                input.value = el.__chart__.getImageURI();
+            } else {
+                input.value = '';
+            }
         }
 
-        const chart = chartElement.__chart__;
-        const imgUri = chart.getImageURI();
-
-        const ventana = window.open('', '_blank');
-        ventana.document.write(`<img src="${imgUri}" style="width:100%">`);
-        ventana.document.close();
-        ventana.focus();
-        ventana.print();
+        document.getElementById('pdfForm').submit();
     }
 
-    function imprimirElemento(idElemento) {
-        const contenido = document.getElementById(idElemento).outerHTML;
-        const ventana = window.open('', '', 'width=800,height=600');
-        ventana.document.write(`
-        <html>
-            <head>
-                <title>Impresión</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    table { width: 100%; border-collapse: collapse; }
-                    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
-                </style>
-            </head>
-            <body>
-                ${contenido}
-            </body>
-        </html>
-    `);
-        ventana.document.close();
-        ventana.focus();
-        ventana.print();
+    function capitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
     }
 </script>

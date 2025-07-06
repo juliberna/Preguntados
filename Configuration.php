@@ -4,6 +4,7 @@ require_once("core/FilePresenter.php");
 require_once("core/MustachePresenter.php");
 require_once("core/Router.php");
 require_once("core/EmailSender.php");
+require_once("core/PdfGenerator.php");
 
 require_once("controller/HomeController.php");
 require_once("controller/GroupController.php");
@@ -70,6 +71,11 @@ class Configuration
         );
     }
 
+    public function getPdfGenerator()
+    {
+        return new PdfGenerator();
+    }
+
     public function getIniConfig()
     {
         return parse_ini_file("configuration/config.ini", true);
@@ -123,11 +129,13 @@ class Configuration
     {
         return new AdminController(
             new AdminModel($this->getDatabase()),
-            $this->getViewer()
+            $this->getViewer(),
+            $this->getPdfGenerator()
         );
     }
 
-    public function getReporteController() {
+    public function getReporteController()
+    {
         return new ReporteController(
             new PreguntaModel($this->getDatabase()),
             $this->getViewer()
