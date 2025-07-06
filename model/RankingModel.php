@@ -15,7 +15,8 @@ class RankingModel
             FROM usuarios u
             JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario
             WHERE ur.id_rol = 1 AND u.puntaje_acumulado > 0
-            ORDER BY u.puntaje_acumulado DESC";
+            ORDER BY u.puntaje_acumulado DESC
+            LIMIT 10";
         return $this->database->query($sql);
     }
 

@@ -1,0 +1,80 @@
+<h2 style="text-align: center;">Dashboard Preguntópolis</h2>
+<p style="text-align: center; color: #666;">Datos desde el {{rango_mostrar}}</p>
+<hr>
+<h3>Resumen General</h3>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+    <tr>
+        <th style="padding: 8px; border: 1px solid #ccc;">Jugadores Totales</th>
+        <th style="padding: 8px; border: 1px solid #ccc;">Partidas Jugadas</th>
+        <th style="padding: 8px; border: 1px solid #ccc;">Preguntas en Juego</th>
+        <th style="padding: 8px; border: 1px solid #ccc;">Preg. Creadas</th>
+        <th style="padding: 8px; border: 1px solid #ccc;">Nuevos Usuarios</th>
+    </tr>
+    <tr>
+        <td style="padding: 8px; border: 1px solid #ccc;">{{total_jugadores}}</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">{{partidas_jugadas}}</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">{{total_preguntas}}</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">{{total_preguntas_creadas}}</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">{{total_jugadores_nuevos}}</td>
+    </tr>
+</table>
+<hr>
+
+{{#grafico_edad}}
+    <div>
+        <h3>Usuarios por Grupo de Edad</h3>
+        <img src="{{grafico_edad}}" style="max-width: 100%;"/>
+    </div>
+{{/grafico_edad}}
+
+{{#grafico_genero}}
+    <div>
+        <h3>Usuarios por Género</h3>
+        <img src="{{grafico_genero}}" style="max-width: 100%;"/>
+    </div>
+{{/grafico_genero}}
+
+
+{{#grafico_paises}}
+    <div>
+        <h3>Distribución por País</h3>
+        <img src="{{grafico_paises}}" style="max-width: 100%;"/>
+    </div>
+{{/grafico_paises}}
+
+
+{{#grafico_porcentaje}}
+    <div>
+        <h3>Porcentaje de Respuestas</h3>
+        <img src="{{grafico_porcentaje}}" style="max-width: 100%;"/>
+    </div>
+{{/grafico_porcentaje}}
+
+<hr>
+
+<h3>Rendimiento por Usuario</h3>
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+    <tr>
+        <th style="padding: 8px; border: 1px solid #ccc;">Usuario</th>
+        <th style="padding: 8px; border: 1px solid #ccc;">Partidas</th>
+        <th style="padding: 8px; border: 1px solid #ccc;">% Correctas</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#rendimiento_usuarios}}
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ccc;">{{nombre_usuario}}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">{{partidas_jugadas}}</td>
+            <td style="padding: 8px; border: 1px solid #ccc;">{{porcentaje_correctas}}%</td>
+        </tr>
+    {{/rendimiento_usuarios}}
+    {{^rendimiento_usuarios}}
+        <tr>
+            <td colspan="3" style="padding: 8px; border: 1px solid #ccc; text-align: center;">No hay datos de
+                rendimiento.
+            </td>
+        </tr>
+    {{/rendimiento_usuarios}}
+    </tbody>
+</table>
