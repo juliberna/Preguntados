@@ -90,8 +90,10 @@ class AdminController{
                 $hasta = (new DateTime())->setTime(23, 59, 59)->format('Y-m-d H:i:s');
                 break;
             case 'semana':
-                $desde = date('Y-m-d 00:00:00', strtotime('-7 days'));
-                $hasta = date('Y-m-d 23:59:59');
+                $lunes = new DateTime('monday this week');
+                $domingo = new DateTime('sunday this week');
+                $desde = $lunes->format('Y-m-d 00:00:00');
+                $hasta = $domingo->format('Y-m-d 23:59:59');
                 break;
             case 'anio':
                 $desde = date('Y-01-01 00:00:00');
@@ -105,13 +107,13 @@ class AdminController{
                     $hasta .= ' 23:59:59';
                 } else {
                     // Mes por defecto cuando selecciona personalizado
-                    $desde = date('Y-m-01 00:00:00', strtotime('-30 days'));
+                    $desde = date('Y-m-01 00:00:00');
                     $hasta = date('Y-m-t 23:59:59');
                 }
                 break;
             case 'mes':
             default:
-                $desde = date('Y-m-01 00:00:00', strtotime('-30 days'));
+                $desde = date('Y-m-01 00:00:00');
                 $hasta = date('Y-m-t 23:59:59');
                 break;
         }
