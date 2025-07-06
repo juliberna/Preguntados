@@ -34,6 +34,8 @@
     </div>
 </main>
 
+<audio id="sonidoClack" src="/public/sounds/clack.mp3" preload="auto"></audio>
+
 <script>
     const ruleta = document.getElementById('ruleta');
     const formVerPregunta = document.getElementById('form-ver-pregunta');
@@ -64,6 +66,20 @@
                 const desplazamiento = data.posicion * 150 - 225;
                 ruleta.style.transition = "transform 3s ease-out";
                 ruleta.style.transform = `translateX(-${desplazamiento}px)`;
+
+                const sonido = document.getElementById("sonidoClack");
+                let pasos = 20; // cantidad de sonidos durante el giro (ajustable)
+                let pasoActual = 0;
+
+                const intervaloSonido = setInterval(() => {
+                    if (pasoActual >= pasos) {
+                        clearInterval(intervaloSonido);
+                        return;
+                    }
+                    sonido.currentTime = 0;
+                    sonido.play();
+                    pasoActual++;
+                }, 3000 / pasos);
 
                 setTimeout(() => {
                     formVerPregunta.style.display = 'block';

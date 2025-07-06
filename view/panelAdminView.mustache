@@ -1,0 +1,299 @@
+{{> navbar}}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <form method="GET" class="d-flex gap-2 align-items-center">
+            <select name="filtro" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="dia" {{#filtro_dia}}selected{{/filtro_dia}}>Día</option>
+                <option value="semana" {{#filtro_semana}}selected{{/filtro_semana}}>Semana</option>
+                <option value="mes" {{#filtro_mes}}selected{{/filtro_mes}}>Mes</option>
+                <option value="anio" {{#filtro_anio}}selected{{/filtro_anio}}>Año</option>
+                <option value="personalizado" {{#filtro_personalizado}}selected{{/filtro_personalizado}}>Personalizado
+                </option>
+            </select>
+
+            {{#filtro_personalizado}}
+                <input type="date" name="desde" value="{{desde}}" class="form-control form-control-sm">
+                <input type="date" name="hasta" value="{{hasta}}" class="form-control form-control-sm">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Filtrar</button>
+            {{/filtro_personalizado}}
+        </form>
+        <div class="d-flex justify-content-end mb-3">
+            <form id="pdfForm" method="POST" action="/admin/generarPdfDashboard" target="_blank">
+                <input type="hidden" name="filtro" value="{{filtro_Actual}}">
+                <input type="hidden" name="desde" value="{{desde}}">
+                <input type="hidden" name="hasta" value="{{hasta}}">
+                <input type="hidden" name="graficoEdad" id="inputGraficoEdad">
+                <input type="hidden" name="graficoGenero" id="inputGraficoGenero">
+                <input type="hidden" name="graficoPorcentaje" id="inputGraficoPorcentaje">
+                <input type="hidden" name="graficoTortaPaises" id="inputGraficoTortaPaises">
+                <button type="button" class="btn btn-primary" onclick="enviarGraficos()">Descargar Dashboard PDF
+                </button>
+            </form>
+        </div>
+    </div>
+    <div>
+        <p class="text-muted small ms-2">Mostrando datos para: <strong>{{rango_mostrar}}</strong></p>
+
+        <div class="row text-center mb-4">
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_jugadores}}</h4>
+                    <p class="text-white-50">Jugadores Totales</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{partidas_jugadas}}</h4>
+                    <p class="text-white-50">Partidas Jugadas</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_preguntas}}</h4>
+                    <p class="text-white-50">Preguntas en Juego</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_preguntas_creadas}}</h4>
+                    <p class="text-white-50">Preg. Creadas</p></div>
+            </div>
+            <div class="col">
+                <div class="p-3 rounded shadow-sm bg-dark text-white"><h4>{{total_jugadores_nuevos}}</h4>
+                    <p class="text-white-50">Nuevos Usuarios</p></div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Usuarios por Grupo de Edad</h5>
+                    </div>
+                    {{#hay_datos_edad}}
+                        <div id="graficoEdad" style="height: 300px;"></div>
+                    {{/hay_datos_edad}}
+                    {{^hay_datos_edad}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de edad para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_edad}}
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Distribución por País</h5>
+                    </div>
+                    {{#hay_datos_paises}}
+                        <div id="graficoTortaPaises" style="height: 300px;"></div>
+                    {{/hay_datos_paises}}
+                    {{^hay_datos_paises}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de países para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_paises}}
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Usuarios por Genero</h5>
+                    </div>
+                    {{#hay_datos_genero}}
+                        <div id="graficoGenero" style="height: 300px;"></div>
+                    {{/hay_datos_genero}}
+                    {{^hay_datos_genero}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de género para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_genero}}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Porcentaje de Respuestas</h5>
+                    </div>
+                    {{#hay_datos_porcentaje}}
+                        <div id="graficoPorcentaje" style="height: 300px;"></div>
+                    {{/hay_datos_porcentaje}}
+                    {{^hay_datos_porcentaje}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>No hay respuestas registradas para este período.</p>
+                        </div>
+                    {{/hay_datos_porcentaje}}
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Usuarios por Pais</h5>
+                    </div>
+                    {{#hay_datos_paises}}
+                        <div id="map" style="height: 300px; border-radius: 10px;"></div>
+                    {{/hay_datos_paises}}
+                    {{^hay_datos_paises}}
+                        <div class="d-flex justify-content-center align-items-center text-muted" style="height: 300px;">
+                            <p>Sin datos de países para el período seleccionado.</p>
+                        </div>
+                    {{/hay_datos_paises}}
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5>Rendimiento por Usuario</h5>
+                    </div>
+                    <div id="tablaRendimiento" class="table-responsive" style="height: 350px;">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Partidas</th>
+                                <th>% Correctas</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#rendimiento_usuarios}}
+                                <tr>
+                                    <td>{{nombre_usuario}}</td>
+                                    <td>{{partidas_jugadas}}</td>
+                                    <td>{{porcentaje_correctas}}%</td>
+                                </tr>
+                            {{/rendimiento_usuarios}}
+                            {{^rendimiento_usuarios}}
+                                <tr>
+                                    <td colspan="3" class="text-center">No hay datos de rendimiento.</td>
+                                </tr>
+                            {{/rendimiento_usuarios}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    google.charts.load('current', {'packages': ['corechart']});
+    google.charts.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+        const graficoEdad = document.getElementById('graficoEdad');
+        if (graficoEdad) {
+            const dataEdad = google.visualization.arrayToDataTable([
+                ['Rango de edad', 'Cantidad'],
+                ['Menor', {{edad.menor}}],
+                ['Mediana edad', {{edad.media}}],
+                ['Mayor', {{edad.mayor}}]
+            ]);
+            const chartEdad = new google.visualization.PieChart(graficoEdad);
+            chartEdad.draw(dataEdad, {title: 'Edades', pieHole: 0.4});
+            graficoEdad.__chart__ = chartEdad;
+
+        }
+
+        const graficoGenero = document.getElementById('graficoGenero');
+        if (graficoGenero) {
+            const dataGenero = google.visualization.arrayToDataTable([
+                ['Género', 'Cantidad'],
+                ['Femenino', {{genero.femenino}}],
+                ['Masculino', {{genero.masculino}}],
+                ['No especificado', {{genero.otro}}]
+            ]);
+            const chartGenero = new google.visualization.PieChart(graficoGenero);
+            chartGenero.draw(dataGenero, {title: 'Géneros', pieHole: 0.4});
+            graficoGenero.__chart__ = chartGenero;
+        }
+
+        const graficoPorcentaje = document.getElementById('graficoPorcentaje');
+        if (graficoPorcentaje) {
+            const dataLinea = new google.visualization.DataTable();
+            dataLinea.addColumn('string', 'Fecha');
+            dataLinea.addColumn('number', '% Correctas');
+            dataLinea.addColumn('number', '% Incorrectas');
+            dataLinea.addRows([
+                {{#porcentaje_general}}
+                    ['{{rango_mostrar}}', {{porcentajeCorrectas}}, {{porcentajeIncorrectas}}],
+                {{/porcentaje_general}}
+            ]);
+            const chartPorcentaje = new google.visualization.BarChart(graficoPorcentaje);
+            chartPorcentaje.draw(dataLinea, {
+                title: '% de Respuestas Respondidas',
+                curveType: 'function',
+                legend: {position: 'bottom'},
+                vAxis: {
+                    minValue: 0,
+                    maxValue: 100,
+                    format: '#\'%\''
+                }
+            });
+            graficoPorcentaje.__chart__ = chartPorcentaje;
+        }
+
+        const graficoTortaPaises = document.getElementById('graficoTortaPaises');
+        if (graficoTortaPaises) {
+            const dataPaises = new google.visualization.DataTable();
+            dataPaises.addColumn('string', 'País');
+            dataPaises.addColumn('number', 'Usuarios');
+
+            const paises = JSON.parse('{{{json_paises_usuarios}}}');
+            paises.forEach(p => {
+                dataPaises.addRow([p.nombre_pais, parseInt(p.cantidad)]);
+            });
+
+            const chartTortaPaises = new google.visualization.PieChart(graficoTortaPaises);
+            chartTortaPaises.draw(dataPaises, {title: 'Usuarios por País', pieHole: 0.4});
+            graficoTortaPaises.__chart__ = chartTortaPaises;
+        }
+    }
+
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        const map = L.map('map').setView([20, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const puntos = JSON.parse('{{{json_paises_usuarios}}}');
+        puntos.forEach(async p => {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(p.nombre_pais)}&format=json&limit=1`, {
+                    headers: {'User-Agent': 'Preguntopolis/1.0'}
+                });
+                const data = await res.json();
+                if (data.length > 0) {
+                    const {lat, lon} = data[0];
+                    L.marker([lat, lon]).addTo(map).bindPopup(`<b>${p.nombre_pais}</b>: ${p.cantidad} usuarios`);
+                }
+            } catch (err) {
+                console.warn("No se pudo geolocalizar", p.nombre_pais, err);
+            }
+        });
+    }
+
+    function enviarGraficos() {
+        const charts = {
+            graficoEdad: document.getElementById('graficoEdad'),
+            graficoGenero: document.getElementById('graficoGenero'),
+            graficoPorcentaje: document.getElementById('graficoPorcentaje'),
+            graficoTortaPaises: document.getElementById('graficoTortaPaises'),
+        };
+
+        for (const [id, el] of Object.entries(charts)) {
+            const input = document.getElementById(`input${capitalize(id)}`);
+
+            if (el && el.__chart__) {
+                input.value = el.__chart__.getImageURI();
+            } else {
+                input.value = '';
+            }
+        }
+
+        document.getElementById('pdfForm').submit();
+    }
+
+    function capitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+</script>

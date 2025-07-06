@@ -4,6 +4,7 @@ require_once("core/FilePresenter.php");
 require_once("core/MustachePresenter.php");
 require_once("core/Router.php");
 require_once("core/EmailSender.php");
+require_once("core/PdfGenerator.php");
 
 require_once("controller/HomeController.php");
 require_once("controller/GroupController.php");
@@ -19,6 +20,7 @@ require_once("controller/RuletaController.php");
 require_once("controller/InicioController.php");
 require_once("controller/PartidaController.php");
 require_once("controller/PerdioController.php");
+require_once("controller/AdminController.php");
 
 require_once("model/GroupModel.php");
 require_once("model/SongModel.php");
@@ -34,6 +36,7 @@ require_once("model/PartidaModel.php");
 require_once("model/PreguntaModel.php");
 require_once("model/EditorModel.php");
 require_once("model/UbicacionModel.php");
+require_once("model/AdminModel.php");
 
 require_once("controller/CrearPreguntaController.php");
 require_once("model/CrearPreguntaModel.php");
@@ -66,6 +69,11 @@ class Configuration
             $config["email"]["password"],
             $config["email"]["port"]
         );
+    }
+
+    public function getPdfGenerator()
+    {
+        return new PdfGenerator();
     }
 
     public function getIniConfig()
@@ -114,6 +122,23 @@ class Configuration
             $this->getViewer(),
             new EditorModel($this->getDatabase()),
             new PreguntaModel($this->getDatabase())
+        );
+    }
+
+    public function getAdminController()
+    {
+        return new AdminController(
+            new AdminModel($this->getDatabase()),
+            $this->getViewer(),
+            $this->getPdfGenerator()
+        );
+    }
+
+    public function getReporteController()
+    {
+        return new ReporteController(
+            new PreguntaModel($this->getDatabase()),
+            $this->getViewer()
         );
     }
 
