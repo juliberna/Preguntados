@@ -200,7 +200,12 @@ class RegistroController
 
     private function generateEmailBodyFor($userName, $token, $idUsuario)
     {
-        $url = "http://localhost/registro/verificar?idUsuario=$idUsuario&idVerificador=$token";
+        // Obtiene el host dinamico para no estar cambiandolo manualmente
+        $host = $_SERVER['HTTP_HOST'];
+        $es_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+        $protocolo = $es_https ? 'https' : 'http';
+
+        $url = "$protocolo://$host/registro/verificar?idUsuario=$idUsuario&idVerificador=$token";
         return "
     <body>
       <p>Hola $userName,</p>

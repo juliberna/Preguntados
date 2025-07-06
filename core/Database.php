@@ -8,6 +8,9 @@ class Database
     function __construct($servername, $username, $dbname, $password)
     {
         $this->conn = new Mysqli($servername, $username, $password, $dbname) or die("Error de conexion " . mysqli_connect_error());
+
+        $this->conn->set_charset("utf8mb4");
+        $this->conn->query("SET time_zone = '-03:00'");
     }
 
     public function query($sql)
