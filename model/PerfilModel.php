@@ -11,17 +11,19 @@ class PerfilModel
 
     public function getDatos($id_usuario)
     {
-
         $resultado = $this->database->query("
-        SELECT u.nombre_usuario, u.foto_perfil_url,u.latitud,u.longitud,
-               p.nombre_pais, c.nombre_ciudad
+        SELECT u.nombre_usuario, u.foto_perfil_url, u.latitud, u.longitud,
+               p.nombre_pais, c.nombre_ciudad,
+               r.nombre_rol AS rol
         FROM usuarios u
         JOIN paises p ON u.id_pais = p.id_pais
         JOIN ciudades c ON u.id_ciudad = c.id_ciudad
-        WHERE u.id_usuario = $id_usuario");
+        JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario
+        JOIN roles r ON ur.id_rol = r.id_rol
+        WHERE u.id_usuario = $id_usuario
+    ");
 
         return $resultado ?? [];
-
     }
 
     public function getCantidadPartidasJugadas($id_usuario)
