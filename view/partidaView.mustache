@@ -88,6 +88,7 @@
 
 <audio id="sonidoWin" src="/public/sounds/win.mp3" preload="auto"></audio>
 <audio id="sonidoLose" src="/public/sounds/gameOver.mp3" preload="auto"></audio>
+<audio id="alertaTiempo" src="/public/sounds/timer.mp3" preload="auto"></audio>
 
 {{#respondido}}
     <script>
@@ -117,10 +118,21 @@
 
     const contador = document.getElementById("contador");
     const contador_texto = document.getElementById("contador_texto");
+    const audioAlerta = document.getElementById("alertaTiempo");
     contador.textContent = tiempo;
 
     const timer = setInterval(() => {
         contador.textContent = tiempo;
+
+        if (tiempo === 4) {
+            for (let i = 0; i <= 3; i++) {
+                setTimeout(() => {
+                    audioAlerta.currentTime = 0;
+                    audioAlerta.play();
+                }, i * 1000);
+            }
+        }
+
         if (tiempo <= 0) {
             clearInterval(timer);
             sessionStorage.removeItem('tiempoRestante');
@@ -141,3 +153,4 @@
         });
     });
 </script>
+
