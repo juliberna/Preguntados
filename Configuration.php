@@ -49,7 +49,7 @@ class Configuration
 {
     public function getDatabase()
     {
-        $config = $this->getIniConfig();
+        $config = $this->loadIniConfig();
 
         return new Database(
             $config["database"]["server"],
@@ -59,9 +59,26 @@ class Configuration
         );
     }
 
+    private function loadIniConfig()
+    {
+        // Detecta si estás en local o en producción
+        $isLocal = $this->isLocalEnvironment();
+        $path = $isLocal ? "configuration/config.local.ini" : "configuration/config.prod.ini";
+
+        return parse_ini_file($path, true);
+    }
+
+    private function isLocalEnvironment()
+    {
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+
+        // Podés agregar más condiciones si usás otro dominio local
+        return strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;
+    }
+
     public function getEmailSender()
     {
-        $config = $this->getIniConfig();
+        $config = $this->loadIniConfig();
 
         return new EmailSender(
             $config["email"]["host"],
@@ -76,10 +93,7 @@ class Configuration
         return new PdfGenerator();
     }
 
-    public function getIniConfig()
-    {
-        return parse_ini_file("configuration/config.ini", true);
-    }
+
 
     public function getRegistroController()
     {
