@@ -38,27 +38,18 @@ if (!isset($_SESSION['usuario_id']) && !in_array($ruta, $rutasPublicas, true)) {
 if (isset($_SESSION['usuario_id'])) {
     $roles = $_SESSION['roles'] ?? [];
 
-    // Si la ruta es de editor y el usuario NO tiene el rol, lo sacamos.
     if (str_starts_with($ruta, 'editor/') && !in_array('editor', $roles, true)) {
         session_unset();
         session_destroy();
-        header("Location: /login/show");
+        header("Location: /login/show?error=trampa");
         exit();
     }
 
-    // Si la ruta empieza con 'admin/', solo los editores pueden acceder
     if (str_starts_with($ruta, 'admin/') && !in_array('admin', $roles, true)) {
-        header("Location: /lobby/show");
+        session_unset();
+        session_destroy();
+        header("Location: /login/show?error=trampa");
         exit();
-    }
-
-    // Si el usuario es ADMIN, solo puede acceder a rutas que empiezan con 'admin/'
-    // Tambien puede acceder a las rutas publicas
-    if (in_array('admin', $roles, true)) {
-        if (!str_starts_with($ruta, 'admin/') && !in_array($ruta, $rutasPublicas, true)) {
-            header("Location: /admin/show");
-            exit();
-        }
     }
 }
 

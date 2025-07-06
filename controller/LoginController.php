@@ -17,12 +17,8 @@ class LoginController
     {
         // Usuario ya logueado, redirigimos según su rol a la página principal
         if (isset($_SESSION['usuario_id'])) {
-            $roles = $_SESSION['roles'] ?? [];
-            if (in_array('editor', $roles, true)) {
-                $this->redirectTo("/editor/show");
-            } else {
-                $this->redirectTo("/lobby/show");
-            }
+            $this->redirigirPorRol($_SESSION['roles'] ?? []);
+            return;
         }
 
         $error = $_SESSION['login_error'] ?? null;
@@ -67,13 +63,19 @@ class LoginController
         $_SESSION['esAdmin'] = in_array('admin', $roles, true);
         $_SESSION['esJugador'] = in_array('jugador', $roles, true);
 
-        if (in_array('editor', $roles)) {
-            $this->redirectTo("/editor/show");
-            return;
-        }
-        $this->redirectTo("/lobby/show");
+        $this->redirigirPorRol($roles);
     }
 
+    private function redirigirPorRol(array $roles): void
+    {
+        if (in_array('admin', $roles, true)) {
+            $this->redirectTo("/admin/show");
+        } elseif (in_array('editor', $roles, true)) {
+            $this->redirectTo("/editor/show");
+        } else {
+            $this->redirectTo("/lobby/show");
+        }
+    }
 
     public
     function logout()
@@ -84,7 +86,6 @@ class LoginController
             $this->redirectTo("/login/show");
         }
     }
-
 
     private
     function redirectTo($str)
